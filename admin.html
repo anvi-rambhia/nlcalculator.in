@@ -14,7 +14,7 @@
     }
     .container {
       width: 90%;
-      max-width: 800px;
+      max-width: 850px;
       margin: 40px auto;
       background: #fff;
       border-radius: 12px;
@@ -49,9 +49,7 @@
       cursor: pointer;
       font-weight: 600;
     }
-    button:hover {
-      background: #0056b3;
-    }
+    button:hover { background: #0056b3; }
     ul {
       list-style: none;
       padding: 0;
@@ -65,7 +63,18 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
     }
+    .actions button {
+      margin-left: 6px;
+      font-size: 13px;
+      padding: 6px 10px;
+      border-radius: 6px;
+    }
+    .actions .edit { background: #28a745; }
+    .actions .edit:hover { background: #1e7e34; }
+    .actions .delete { background: #dc3545; }
+    .actions .delete:hover { background: #b21f2d; }
     .price {
       color: #555;
       font-size: 14px;
@@ -92,7 +101,15 @@
   <script type="module">
     // Import Firebase modules
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      getDocs,
+      doc,
+      updateDoc,
+      deleteDoc
+    } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
     // Firebase configuration
     const firebaseConfig = {
@@ -108,7 +125,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Save Model to Firestore
+    // Save Model
     async function saveModel() {
       const name = document.getElementById("modelName").value.trim();
       const price = document.getElementById("modelPrice").value.trim();
@@ -120,22 +137,21 @@
 
       try {
         await addDoc(collection(db, "models"), {
-          name: name,
-          price: price,
+          name,
+          price,
           timestamp: new Date(),
         });
-
         alert("✅ Model Saved Successfully!");
         document.getElementById("modelName").value = "";
         document.getElementById("modelPrice").value = "";
-        fetchModels(); // Refresh list
+        fetchModels();
       } catch (error) {
         console.error("Error saving model:", error);
         alert("❌ Failed to save model. Check console for details.");
       }
     }
 
-    // Fetch and Display Models
+    // Fetch Models
     async function fetchModels() {
       const modelList = document.getElementById("modelList");
       modelList.innerHTML = "<li>Loading...</li>";
@@ -147,8 +163,14 @@
         const data = docSnap.data();
         const li = document.createElement("li");
         li.innerHTML = `
-          <span>${data.name}</span>
-          <span class="price">₹${data.price}</span>
+          <div>
+            <strong>${data.name}</strong>
+            <div class="price">₹${data.price}</div>
+          </div>
+          <div class="actions">
+            <button class="edit" data-id="${docSnap.id}">Edit</button>
+            <button class="delete" data-id="${docSnap.id}">Delete</button>
+          </div>
         `;
         modelList.appendChild(li);
       });
@@ -156,9 +178,53 @@
       if (modelList.innerHTML === "") {
         modelList.innerHTML = "<li>No models saved yet.</li>";
       }
+
+      // Attach listeners for Edit and Delete
+      document.querySelectorAll(".edit").forEach((btn) => {
+        btn.addEventListener("click", () => editModel(btn.dataset.id));
+      });
+      document.querySelectorAll(".delete").forEach((btn) => {
+        btn.addEventListener("click", () => deleteModel(btn.dataset.id));
+      });
     }
 
-    // Event listeners
+    // Edit Model
+    async function editModel(id) {
+      const newName = prompt("Enter new model name:");
+      const newPrice = prompt("Enter new price:");
+
+      if (!newName || !newPrice) {
+        alert("⚠️ Both fields required to update!");
+        return;
+      }
+
+      try {
+        const modelRef = doc(db, "models", id);
+        await updateDoc(modelRef, { name: newName, price: newPrice });
+        alert("✅ Model updated successfully!");
+        fetchModels();
+      } catch (error) {
+        console.error("Error updating model:", error);
+        alert("❌ Failed to update model.");
+      }
+    }
+
+    // Delete Model
+    async function deleteModel(id) {
+      if (!confirm("Are you sure you want to delete this model?")) return;
+
+      try {
+        const modelRef = doc(db, "models", id);
+        await deleteDoc(modelRef);
+        alert("🗑️ Model deleted successfully!");
+        fetchModels();
+      } catch (error) {
+        console.error("Error deleting model:", error);
+        alert("❌ Failed to delete model.");
+      }
+    }
+
+    // Event Listeners
     document.getElementById("saveBtn").addEventListener("click", saveModel);
     document.addEventListener("DOMContentLoaded", fetchModels);
   </script>
