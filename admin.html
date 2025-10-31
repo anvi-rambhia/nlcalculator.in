@@ -1,802 +1,331 @@
-<!DOCTYPE html>
-<html lang="en" >
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kore Mobiles — Admin Dashboard</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f7faff;
-      margin: 1em;
-      color: #333;
-    }
-    h2 {
-      color: #0066ff;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 0.3em;
-    }
-    .gear-icon {
-      font-size: 1.5em;
-      color: #a5a5a5;
-    }
-    .top-buttons {
-      margin-bottom: 1.5em;
-    }
-    button {
-      border: none;
-      padding: 0.5em 1em;
-      font-weight: 600;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-left: 0.5em;
-      transition: background-color 0.2s ease;
-    }
-    button.blue {
-      background-color: #0069ff;
-      color: white;
-    }
-    button.blue:hover {
-      background-color: #0056cc;
-    }
-    button.red {
-      background-color: #e02b3d;
-      color: white;
-    }
-    button.red:hover {
-      background-color: #b02029;
-    }
-    .container {
-      display: flex;
-      gap: 2em;
-      flex-wrap: wrap;
-    }
-    section {
-      background-color: white;
-      padding: 1em 1.2em;
-      border-radius: 15px;
-      box-shadow: 0 0 6px #d0dbff;
-    }
-    .models-section {
-      flex: 2 1 700px;
-      min-width: 320px;
-    }
-    .form-section {
-      flex: 1 1 380px;
-      min-width: 300px;
-      display: flex;
-      flex-direction: column;
-      gap: 1.3em;
-    }
-    input[type="text"], input[type="number"], input[type="email"], input[type="password"], textarea {
-      width: 100%;
-      padding: 0.4em 0.6em;
-      margin: 0.3em 0.6em 0.9em 0;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      font-size: 1em;
-      box-sizing: border-box;
-    }
-    input[readonly] {
-      background-color: #eee;
-    }
-    label {
-      font-weight: 700;
-      display: block;
-      margin-bottom: 0.2em;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 0.8em;
-      table-layout: fixed;
-      word-wrap: break-word;
-    }
-    th, td {
-      padding: 0.5em 0.3em;
-      text-align: left;
-      vertical-align: middle;
-    }
-    th {
-      border-bottom: 2px solid #ccc;
-    }
-    td {
-      border-bottom: 1px solid #eee;
-    }
-    td > strong {
-      display: block;
-    }
-    td > span {
-      color: gray;
-      font-size: 0.85em;
-    }
-    .actions button {
-      padding: 0.3em 0.6em;
-      margin-right: 0.3em;
-      border-radius: 6px;
-      font-weight: 600;
-      font-size: 0.9em;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-      min-width: 60px;
-    }
-    .actions button.edit {
-      background-color: #fdca04;
-      color: black;
-    }
-    .actions button.edit:hover {
-      background-color: #e0b300;
-    }
-    .actions button.delete {
-      background-color: #e02b3d;
-      color: white;
-    }
-    .actions button.delete:hover {
-      background-color: #b02029;
-    }
-    .save-clear-export {
-      display: flex;
-      gap: 0.8em;
-      margin-top: 0.6em;
-    }
-    .save-clear-export button {
-      flex: 1;
-    }
-    .save-clear-export button.save {
-      background-color: #198754;
-      color: white;
-    }
-    .save-clear-export button.save:hover {
-      background-color: #147442;
-    }
-    .save-clear-export button.clear,
-    .save-clear-export button.export {
-      background-color: #ddd;
-      color: black;
-    }
-    .save-clear-export button.clear:hover,
-    .save-clear-export button.export:hover {
-      background-color: #bbb;
-    }
-    hr {
-      margin: 1em 0;
-      border: none;
-      border-top: 1px solid #ccc;
-    }
-    .note {
-      font-size: 0.85em;
-      color: gray;
-      margin-top: 1em;
-    }
-
-    /* Users section table */
-    #usersSection table {
-      font-size: 0.9em;
-    }
-    #usersSection td {
-      white-space: nowrap;
-    }
-    #usersSection td input {
-      width: 90%;
-      padding: 0.3em 0.4em;
-      margin: 0;
-      font-size: 0.9em;
-    }
-    #usersSection .actions button {
-      min-width: 50px;
-      margin: 0 0.15em;
-      padding: 0.3em 0.5em;
-    }
-
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Kore Mobiles — Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--blue:#007bff;--green:#28a745;--red:#dc3545;--bg:#f7f9fc}
+body{font-family:'Poppins',sans-serif;margin:0;background:var(--bg);color:#111}
+.wrap{max-width:980px;margin:18px auto;padding:14px}
+.header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+h2{color:var(--blue);margin:0;font-size:1.4rem}
+.btn{padding:10px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:600}
+.primary{background:var(--blue);color:#fff}
+.logout{background:var(--red);color:#fff}
+.layout{display:grid;grid-template-columns:1fr 420px;gap:14px}
+.panel{background:#fff;border-radius:12px;padding:12px;box-shadow:0 12px 30px rgba(0,0,0,0.06)}
+.form-row{display:flex;gap:10px;flex-wrap:wrap}
+.form-row .half{flex:1;min-width:140px}
+label{font-weight:600;font-size:.95rem;margin-top:6px;display:block}
+.small{font-size:.95rem;color:#444}
+.table{width:100%;border-collapse:collapse;margin-top:8px}
+.table th,.table td{padding:8px;border-bottom:1px solid #eee;text-align:left;font-size:.95rem}
+.actions button{margin-right:6px;padding:6px 10px;border-radius:8px;border:none;cursor:pointer}
+.edit{background:#ffc107;color:#111}
+.del{background:#dc3545;color:#fff}
+.add{background:var(--green);color:#fff}
+.user-list{max-height:220px;overflow:auto;margin-top:8px}
+.note{font-size:.9rem;color:#666;margin-top:8px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 
-  <h2><span class="gear-icon">⚙️</span>Admin Dashboard</h2>
-
-  <div class="top-buttons">
-    <button class="blue" id="openUserPanelBtn">Open User Panel</button>
-    <button class="red" id="logoutBtn">Logout</button>
+<div class="wrap">
+  <div class="header">
+    <h2>⚙️ Admin Dashboard</h2>
+    <div style="display:flex;gap:8px">
+      <a class="btn primary" href="index.html" onclick="openUserPanel()">Open User Panel</a>
+      <a class="btn logout" href="admin-login.html" onclick="adminLogout()">Logout</a>
+    </div>
   </div>
 
-  <div class="container">
-    <!-- Models Section -->
-    <section class="models-section">
-      <h3>Models</h3>
-      <input
-        type="text" id="filterInput"
-        placeholder="Filter by name/ram/rom"
-        title="Filter models by name, RAM or ROM"
-      />
-      <button id="refreshBtn">Refresh</button>
-
-      <table>
-        <thead>
-          <tr>
-            <th style="width: 140px;">Model</th>
-            <th>MOP</th>
-            <th>DP</th>
-            <th>Pre-GST DP</th>
-            <th>Sellout</th>
-            <th>Sellin</th>
-            <th style="width:130px;">CC Offers</th>
-            <th style="width:100px;">Banks</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="modelsTableBody"></tbody>
+  <div class="layout">
+    <!-- Left: Models list -->
+    <div class="panel">
+      <h3 style="margin-top:0">Models</h3>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <input id="filterInput" placeholder="Filter by name/ram/rom" style="flex:1;padding:10px;border-radius:8px;border:1px solid #eee"/>
+        <button class="btn" onclick="renderModels()">Refresh</button>
+      </div>
+      <table class="table">
+        <thead><tr><th>Model</th><th>MOP</th><th>DP</th><th>Pre-GST DP</th><th>Sellout</th><th>Sellin</th><th>CC Offers</th><th>Banks</th><th>Actions</th></tr></thead>
+        <tbody id="modelsTbody"></tbody>
       </table>
+      <p class="note">Models are kept in localStorage for testing. You can export JSON if needed.</p>
+    </div>
 
-      <p class="note">
-        Models are kept in localStorage for testing. You can export JSON if needed.
-      </p>
-    </section>
+    <!-- Right: Add / Edit Model & Users -->
+    <div class="panel">
+      <h3 style="margin-top:0">Add / Edit Model</h3>
 
-    <!-- Form Section -->
-    <section class="form-section" style="overflow-y:auto; max-height: 90vh;">
-      <!-- Model Form -->
       <div>
-        <h3>Add / Edit Model</h3>
-
-        <form id="modelForm" autocomplete="off">
-
-          <label for="modelName">Model Name</label>
-          <input
-            type="text"
-            id="modelName"
-            placeholder="e.g. Galaxy S24 8GB/128GB"
-            required
-          />
-
-          <div style="display: flex; gap: 1em; flex-wrap: wrap;">
-            <div style="flex: 1;">
-              <label for="mop">MOP (₹)</label>
-              <input type="number" id="mop" min="0" step="1" required />
-            </div>
-            <div style="flex: 1;">
-              <label for="dp">DP (₹)</label>
-              <input type="number" id="dp" min="0" step="1" required />
-            </div>
-          </div>
-
-          <div style="display: flex; gap: 1em; flex-wrap: wrap; margin-top: -10px;">
-            <div style="flex: 1;">
-              <label for="preGSTDP">Pre-GST DP (auto)</label>
-              <input type="number" id="preGSTDP" readonly />
-            </div>
-            <div style="flex: 1;">
-              <label for="sellout">Sellout Scheme (₹)</label>
-              <input type="number" id="sellout" min="0" step="1" />
-            </div>
-          </div>
-
-          <label for="sellin" style="margin-top: 0.8em;">Sellin / Purchase Scheme (₹)</label>
-          <input type="number" id="sellin" min="0" step="1" />
-
-          <hr />
-
-          <h4>Credit Card Offers</h4>
-
-          <div style="display: flex; gap: 1em; flex-wrap: wrap;">
-            <div style="flex: 1;">
-              <label for="ccNoCost">No Cost EMI Amount (₹)</label>
-              <input type="number" id="ccNoCost" min="0" step="1" />
-            </div>
-            <div style="flex: 1;">
-              <label for="ccFullSwipe">Full Swipe Amount (₹)</label>
-              <input type="number" id="ccFullSwipe" min="0" step="1" />
-            </div>
-          </div>
-
-          <label for="eligibleBanks" style="margin-top: 0.8em;">
-            Eligible Banks (comma separated)
-          </label>
-          <textarea
-            id="eligibleBanks"
-            rows="3"
-            placeholder="e.g. HDFC, SBI, ICICI"
-          ></textarea>
-
-          <div class="save-clear-export">
-            <button type="submit" class="save">Save Model</button>
-            <button type="button" id="clearBtn" class="clear">Clear</button>
-            <button type="button" id="exportBtn" class="export">Export JSON</button>
-          </div>
-        </form>
+        <label>Model Name</label>
+        <input id="m_name" placeholder="e.g. Galaxy S24" />
       </div>
 
-      <hr />
-
-      <!-- Users Section -->
-      <div id="usersSection">
-        <h3>Users</h3>
-
-        <form id="userForm" autocomplete="off">
-          <label for="userEmail">Email</label>
-          <input
-            type="email"
-            id="userEmail"
-            placeholder="email@example.com"
-            required
-          />
-          <label for="userPassword">Password</label>
-          <input
-            type="password"
-            id="userPassword"
-            placeholder="Password"
-            required
-          />
-          <div style="display: flex; gap: 0.7em; margin-top: 0.8em;">
-            <button type="submit" class="save" style="flex: 1;">Add / Update User</button>
-            <button type="button" id="clearUserBtn" class="clear" style="flex: 1;">Clear</button>
-            <button type="button" id="exportUsersBtn" class="export" style="flex: 1;">Export JSON</button>
-          </div>
-        </form>
-
-        <table>
-          <thead>
-            <tr>
-              <th style="width: 180px;">Email</th>
-              <th>Password</th>
-              <th style="width: 95px;">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="usersTableBody"></tbody>
-        </table>
-
-        <p class="note">
-          Users are stored in localStorage. Passwords shown here are NOT encrypted (demo only).
-        </p>
+      <div class="form-row">
+        <div class="half">
+          <label>MOP (₹)</label>
+          <input id="m_mop" type="number" />
+        </div>
+        <div class="half">
+          <label>DP (₹)</label>
+          <input id="m_dp" type="number" oninput="calcPreGst()" />
+        </div>
       </div>
-    </section>
+
+      <div class="form-row">
+        <div class="half">
+          <label>Pre-GST DP (auto)</label>
+          <input id="m_preGst" readonly />
+        </div>
+        <div class="half">
+          <label>Sellout Scheme (₹)</label>
+          <input id="m_sellout" type="number" />
+        </div>
+      </div>
+
+      <div>
+        <label>Sellin / Purchase Scheme (₹)</label>
+        <input id="m_sellin" type="number" />
+      </div>
+
+      <hr style="margin:12px 0"/>
+
+      <h4 style="margin:6px 0">Credit Card Offers</h4>
+      <div class="form-row">
+        <div class="half">
+          <label>No Cost EMI Amount (₹)</label>
+          <input id="m_cc_no" type="number" />
+        </div>
+        <div class="half">
+          <label>Full Swipe Amount (₹)</label>
+          <input id="m_cc_full" type="number" />
+        </div>
+      </div>
+
+      <div style="margin-top:8px">
+        <label>Eligible Banks (comma separated)</label>
+        <textarea id="m_banks" rows="3" placeholder="e.g. HDFC, SBI, ICICI"></textarea>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn add" onclick="saveModel()">Save Model</button>
+        <button class="btn" onclick="clearModelForm()">Clear</button>
+        <button class="btn" onclick="exportModels()">Export JSON</button>
+      </div>
+
+      <hr style="margin:14px 0"/>
+
+      <h3 style="margin-top:0">Users</h3>
+      <label>Email</label>
+      <input id="u_email" placeholder="email@example.com" />
+      <label>Password</label>
+      <input id="u_pass" placeholder="password" />
+      <label>Role</label>
+      <select id="u_role">
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+      </select>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn primary" onclick="addUser()">Add User</button>
+        <button class="btn" onclick="renderUsers()">Show Users</button>
+      </div>
+
+      <div class="user-list" id="usersList"></div>
+      <p class="note">Users and models are stored in localStorage for now so they persist across browser sessions for testing.</p>
+    </div>
   </div>
+</div>
 
-  <script>
-    // Utility: Parse comma separated banks and trim
-    function parseBanks(banksString) {
-      return banksString
-        .split(',')
-        .map(b => b.trim())
-        .filter(b => b.length > 0);
-    }
+<script>
+/* --- Helpers for storage --- */
+function getModels(){ return JSON.parse(localStorage.getItem('kore_models')||'[]'); }
+function setModels(arr){ localStorage.setItem('kore_models', JSON.stringify(arr)); }
+function getUsers(){ return JSON.parse(localStorage.getItem('kore_users')||'[]'); }
+function setUsers(arr){ localStorage.setItem('kore_users', JSON.stringify(arr)); }
 
-    // --- Models Section ---
-    const modelsTableBody = document.getElementById('modelsTableBody');
-    const filterInput = document.getElementById('filterInput');
-    const refreshBtn = document.getElementById('refreshBtn');
+/* Ensure default admin exists to let you login */
+(function ensureDefaults(){
+  const users = getUsers();
+  if(!users.find(u=>u.role==='admin')){
+    users.push({email:'admin@koremobiles.com',password:'1234',role:'admin'});
+    setUsers(users);
+  }
+  if(!localStorage.getItem('kore_models')){
+    const demo = [
+      {id:Date.now()+1,name:"Samsung S24",mop:70000,dp:56000,preGstDp:(56000/1.18).toFixed(2),selloutScheme:2000,sellinScheme:1500,ccNoCost:2000,ccFullSwipe:1500,eligibleBanks:"HDFC, SBI", ram:"8GB", rom:"128GB"},
+      {id:Date.now()+2,name:"iPhone 15",mop:79999,dp:62000,preGstDp:(62000/1.18).toFixed(2),selloutScheme:3000,sellinScheme:2500,ccNoCost:2500,ccFullSwipe:1800,eligibleBanks:"HDFC, ICICI", ram:"6GB", rom:"128GB"}
+    ];
+    setModels(demo);
+  }
+})();
 
-    const modelForm = document.getElementById('modelForm');
-    const clearBtn = document.getElementById('clearBtn');
-    const exportBtn = document.getElementById('exportBtn');
+/* Open user panel */
+function openUserPanel(){ window.location.href='index.html'; }
 
-    const modelNameInput = document.getElementById('modelName');
-    const mopInput = document.getElementById('mop');
-    const dpInput = document.getElementById('dp');
-    const preGSTDPInput = document.getElementById('preGSTDP');
-    const selloutInput = document.getElementById('sellout');
-    const sellinInput = document.getElementById('sellin');
+/* Admin logout */
+function adminLogout(){
+  sessionStorage.removeItem('kore_session_admin');
+  window.location.href='admin-login.html';
+}
 
-    const ccNoCostInput = document.getElementById('ccNoCost');
-    const ccFullSwipeInput = document.getElementById('ccFullSwipe');
-    const eligibleBanksInput = document.getElementById('eligibleBanks');
+/* Render models into table */
+function renderModels(){
+  const tbody = document.getElementById('modelsTbody');
+  const all = getModels();
+  const q = (document.getElementById('filterInput').value || '').toLowerCase();
+  const list = q ? all.filter(m=> (m.name||'').toLowerCase().includes(q) || (m.ram||'').toLowerCase().includes(q) || (m.rom||'').toLowerCase().includes(q)) : all;
+  tbody.innerHTML = '';
+  list.forEach(m=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${m.name}</strong><div class="small">${m.ram||''}/${m.rom||''}</div></td>
+      <td>₹${m.mop||0}</td>
+      <td>₹${m.dp||0}</td>
+      <td>₹${m.preGstDp||0}</td>
+      <td>₹${m.selloutScheme||0}</td>
+      <td>₹${m.sellinScheme||0}</td>
+      <td>NoCost:${m.ccNoCost||0}<br>Full:${m.ccFullSwipe||0}</td>
+      <td>${m.eligibleBanks||''}</td>
+      <td class="actions"><button class="edit" onclick="editModel(${m.id})">Edit</button><button class="del" onclick="deleteModel(${m.id})">Delete</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
 
-    let models = [];
-    let editModelIndex = null;
+/* Clear form */
+function clearModelForm(){
+  ['m_name','m_mop','m_dp','m_preGst','m_sellout','m_sellin','m_cc_no','m_cc_full','m_banks','m_ram','m_rom'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('m_name').dataset.editId = '';
+  document.getElementById('m_name').focus();
+}
 
-    // Load models from localStorage or defaults
-    function loadModels() {
-      const stored = localStorage.getItem('models');
-      if (stored) {
-        models = JSON.parse(stored);
-      } else {
-        models = [
-          {
-            modelName: 'Samsung S24',
-            specs: '8GB/128GB',
-            mop: 70000,
-            dp: 56000,
-            preGSTDP: 47457.63,
-            sellout: 2000,
-            sellin: 1500,
-            ccOffers: {
-              noCost: 2000,
-              fullSwipe: 1500,
-            },
-            banks: ['HDFC', 'SBI']
-          },
-          {
-            modelName: 'iPhone 15',
-            specs: '6GB/128GB',
-            mop: 79999,
-            dp: 62000,
-            preGSTDP: 52542.37,
-            sellout: 3000,
-            sellin: 2500,
-            ccOffers: {
-              noCost: 2500,
-              fullSwipe: 1800,
-            },
-            banks: ['HDFC', 'ICICI']
-          }
-        ];
-        saveModels();
-      }
-    }
+/* Save model (add or update) */
+function saveModel(){
+  const name = document.getElementById('m_name').value.trim();
+  if(!name) return alert('Enter model name');
+  const mop = Number(document.getElementById('m_mop').value) || 0;
+  const dp = Number(document.getElementById('m_dp').value) || 0;
+  const pre = (dp? (dp/1.18).toFixed(2) : '');
+  const sellout = Number(document.getElementById('m_sellout').value) || 0;
+  const sellin = Number(document.getElementById('m_sellin').value) || 0;
+  const ccNo = Number(document.getElementById('m_cc_no').value) || 0;
+  const ccFull = Number(document.getElementById('m_cc_full').value) || 0;
+  const banks = document.getElementById('m_banks').value.trim();
+  const ram = document.getElementById('m_ram').value.trim();
+  const rom = document.getElementById('m_rom').value.trim();
 
-    // Save models to localStorage
-    function saveModels() {
-      localStorage.setItem('models', JSON.stringify(models));
-    }
-
-    // Format amount as INR
-    function formatINR(value) {
-      if (value == null || isNaN(value)) return '-';
-      return '₹' + Number(value).toLocaleString('en-IN');
-    }
-
-    // Calculate Pre-GST DP based on DP and GST assumed as 18%
-    function calculatePreGSTDP(dp) {
-      if (!dp || dp <= 0) return 0;
-      return +(dp / 1.18).toFixed(2);
-    }
-
-    // Render models table and apply filter
-    function renderModels(filter = '') {
-      const lowerFilter = filter.toLowerCase();
-      modelsTableBody.innerHTML = '';
-
-      const filteredModels = models.filter(m => {
-        return (
-          m.modelName.toLowerCase().includes(lowerFilter) ||
-          (m.specs && m.specs.toLowerCase().includes(lowerFilter))
-        );
-      });
-
-      if (filteredModels.length === 0) {
-        modelsTableBody.innerHTML = '<tr><td colspan="9" style="color: #888; text-align:center;">No models found matching the filter.</td></tr>';
-        return;
-      }
-
-      filteredModels.forEach((model, index) => {
-        let ccOffersText = '-';
-        if (model.ccOffers && (model.ccOffers.noCost > 0 || model.ccOffers.fullSwipe > 0)) {
-          ccOffersText = `NoCost:${model.ccOffers.noCost || 0} Full:${model.ccOffers.fullSwipe || 0}`;
-        }
-
-        const banksStr = model.banks ? model.banks.join(', ') : '-';
-        const row = document.createElement('tr');
-
-        row.innerHTML = `
-          <td><strong>${model.modelName}</strong><br/><span>${model.specs || ''}</span></td>
-          <td>${formatINR(model.mop)}</td>
-          <td>${formatINR(model.dp)}</td>
-          <td>${formatINR(model.preGSTDP)}</td>
-          <td>${formatINR(model.sellout)}</td>
-          <td>${formatINR(model.sellin)}</td>
-          <td>${ccOffersText}</td>
-          <td>${banksStr}</td>
-          <td class="actions">
-            <button class="edit" title="Edit Model">Edit</button>
-            <button class="delete" title="Delete Model">Delete</button>
-          </td>
-        `;
-
-        // Edit button
-        row.querySelector('.edit').addEventListener('click', () => {
-          editModelIndex = models.indexOf(model);
-          populateModelForm(model);
-          window.scrollTo({top: 0, behavior: 'smooth'});
-        });
-
-        // Delete button
-        row.querySelector('.delete').addEventListener('click', () => {
-          if(confirm(`Are you sure you want to delete model "${model.modelName}"?`)) {
-            models.splice(models.indexOf(model), 1);
-            saveModels();
-            renderModels(filterInput.value);
-            clearModelForm();
-          }
-        });
-
-        modelsTableBody.appendChild(row);
-      });
-    }
-
-    // Populate model form (edit mode)
-    function populateModelForm(model) {
-      modelNameInput.value = model.modelName;
-      mopInput.value = model.mop;
-      dpInput.value = model.dp;
-      preGSTDPInput.value = model.preGSTDP;
-      selloutInput.value = model.sellout || '';
-      sellinInput.value = model.sellin || '';
-      ccNoCostInput.value = (model.ccOffers && model.ccOffers.noCost) || '';
-      ccFullSwipeInput.value = (model.ccOffers && model.ccOffers.fullSwipe) || '';
-      eligibleBanksInput.value = (model.banks || []).join(', ');
-    }
-
-    // Clear model form & reset
-    function clearModelForm() {
-      modelForm.reset();
-      preGSTDPInput.value = '';
-      editModelIndex = null;
-    }
-
-    // Auto calculate Pre-GST DP when DP changes
-    function autoCalculatePreGST() {
-      const dpVal = parseFloat(dpInput.value);
-      if (!isNaN(dpVal) && dpVal > 0) {
-        preGSTDPInput.value = calculatePreGSTDP(dpVal);
-      } else {
-        preGSTDPInput.value = '';
-      }
-    }
-
-    // Validate model before saving
-    function validateModel(model) {
-      if (!model.modelName.trim()) {
-        alert('Model Name is required.');
-        return false;
-      }
-      if (isNaN(model.mop) || model.mop <= 0) {
-        alert('Valid MOP is required.');
-        return false;
-      }
-      if (isNaN(model.dp) || model.dp <= 0) {
-        alert('Valid DP is required.');
-        return false;
-      }
-      if (isNaN(model.preGSTDP) || model.preGSTDP <= 0) {
-        alert('Valid Pre-GST DP is required.');
-        return false;
-      }
-      return true;
-    }
-
-    // Event listener for saving model (add or update)
-    modelForm.addEventListener('submit', e => {
-      e.preventDefault();
-
-      const modelNameVal = modelNameInput.value.trim();
-      // Attempt to extract specs from modelName if format includes (specs)
-      let specs = '';
-      const specsMatch = modelNameVal.match(/\((.+)\)$/);
-      if (specsMatch) {
-        specs = specsMatch[1];
-      } else {
-        // Or fallback parse RAM/ROM if included e.g. "Galaxy S24 8GB/128GB"
-        const parts = modelNameVal.split(' ');
-        const lastPart = parts[parts.length - 1];
-        if (/^\d+GB\/\d+GB$/i.test(lastPart)) {
-          specs = lastPart;
-        }
-      }
-
-      const mopVal = parseFloat(mopInput.value);
-      const dpVal = parseFloat(dpInput.value);
-      const preGSTDPVal = parseFloat(preGSTDPInput.value);
-      const selloutVal = parseFloat(selloutInput.value) || 0;
-      const sellinVal = parseFloat(sellinInput.value) || 0;
-      const ccNoCostVal = parseFloat(ccNoCostInput.value) || 0;
-      const ccFullSwipeVal = parseFloat(ccFullSwipeInput.value) || 0;
-      const eligibleBanksArr = parseBanks(eligibleBanksInput.value);
-
-      const newModel = {
-        modelName: modelNameVal,
-        specs: specs,
-        mop: mopVal,
-        dp: dpVal,
-        preGSTDP: preGSTDPVal,
-        sellout: selloutVal,
-        sellin: sellinVal,
-        ccOffers: {
-          noCost: ccNoCostVal,
-          fullSwipe: ccFullSwipeVal,
-        },
-        banks: eligibleBanksArr,
-      };
-
-      if (!validateModel(newModel)) return;
-
-      if (editModelIndex !== null) {
-        models[editModelIndex] = newModel;
-      } else {
-        models.push(newModel);
-      }
-      saveModels();
-      renderModels(filterInput.value);
+  const models = getModels();
+  const editId = document.getElementById('m_name').dataset.editId;
+  if(editId){
+    const idx = models.findIndex(x=>String(x.id)===String(editId));
+    if(idx>-1){
+      models[idx] = Object.assign(models[idx], {name, mop, dp, preGstDp:pre, selloutScheme:sellout, sellinScheme:sellin, ccNoCost:ccNo, ccFullSwipe:ccFull, eligibleBanks:banks, ram, rom});
+      setModels(models);
+      renderModels();
       clearModelForm();
-    });
-
-    // Input event to update preGSTDP automatically
-    dpInput.addEventListener('input', autoCalculatePreGST);
-
-    // Filter input event for models
-    filterInput.addEventListener('input', () => {
-      renderModels(filterInput.value);
-    });
-
-    // Refresh models button
-    refreshBtn.addEventListener('click', () => {
-      loadModels();
-      renderModels(filterInput.value);
-    });
-
-    // Clear model form button
-    clearBtn.addEventListener('click', () => {
-      clearModelForm();
-    });
-
-    // Export models JSON
-    exportBtn.addEventListener('click', () => {
-      const dataStr = JSON.stringify(models, null, 2);
-      const blob = new Blob([dataStr], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'models.json';
-      a.click();
-
-      URL.revokeObjectURL(url);
-    });
-
-    // --- Users Section ---
-    const usersTableBody = document.getElementById('usersTableBody');
-    const userForm = document.getElementById('userForm');
-    const userEmailInput = document.getElementById('userEmail');
-    const userPasswordInput = document.getElementById('userPassword');
-    const clearUserBtn = document.getElementById('clearUserBtn');
-    const exportUsersBtn = document.getElementById('exportUsersBtn');
-
-    let users = [];
-    let editUserIndex = null;
-
-    // Load users from localStorage or initialize
-    function loadUsers() {
-      const stored = localStorage.getItem('users');
-      if (stored) {
-        users = JSON.parse(stored);
-      } else {
-        users = [
-          { email: 'admin@example.com', password: 'admin123' }
-        ];
-        saveUsers();
-      }
+      return alert('Model updated');
     }
+  }
 
-    // Save users to localStorage
-    function saveUsers() {
-      localStorage.setItem('users', JSON.stringify(users));
-    }
+  const newModel = { id: Date.now()+Math.floor(Math.random()*999), name, mop, dp, preGstDp:pre, selloutScheme:sellout, sellinScheme:sellin, ccNoCost:ccNo, ccFullSwipe:ccFull, eligibleBanks:banks, ram, rom };
+  models.push(newModel);
+  setModels(models);
+  renderModels();
+  clearModelForm();
+  alert('Model added');
+}
 
-    // Render users table
-    function renderUsers() {
-      usersTableBody.innerHTML = '';
-      if (users.length === 0) {
-        usersTableBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#888;">No users registered.</td></tr>`;
-        return;
-      }
+/* calculate Pre-GST on input */
+function calcPreGst(){
+  const dp = Number(document.getElementById('m_dp').value) || 0;
+  const pre = dp? (dp/1.18).toFixed(2) : '';
+  document.getElementById('m_preGst').value = pre;
+}
 
-      users.forEach((user, idx) => {
-        const row = document.createElement('tr');
-        // We create editable inputs inline for user email and password
-        row.innerHTML = `
-          <td><input type="email" class="user-email" value="${user.email}" required /></td>
-          <td><input type="password" class="user-password" value="${user.password}" required /></td>
-          <td class="actions">
-            <button class="update" title="Update">Update</button>
-            <button class="delete" title="Delete">Delete</button>
-          </td>
-        `;
+/* Edit model */
+function editModel(id){
+  const models = getModels();
+  const m = models.find(x=>String(x.id)===String(id));
+  if(!m) return alert('Model not found');
+  document.getElementById('m_name').value = m.name;
+  document.getElementById('m_mop').value = m.mop||'';
+  document.getElementById('m_dp').value = m.dp||'';
+  document.getElementById('m_preGst').value = m.preGstDp||'';
+  document.getElementById('m_sellout').value = m.selloutScheme||'';
+  document.getElementById('m_sellin').value = m.sellinScheme||'';
+  document.getElementById('m_cc_no').value = m.ccNoCost||'';
+  document.getElementById('m_cc_full').value = m.ccFullSwipe||'';
+  document.getElementById('m_banks').value = m.eligibleBanks||'';
+  document.getElementById('m_ram').value = m.ram||'';
+  document.getElementById('m_rom').value = m.rom||'';
+  document.getElementById('m_name').dataset.editId = m.id;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
 
-        // Update button handler: update user email and password
-        const updateBtn = row.querySelector('.update');
-        updateBtn.addEventListener('click', () => {
-          const updatedEmail = row.querySelector('.user-email').value.trim();
-          const updatedPass = row.querySelector('.user-password').value;
-          if (!updatedEmail || !updatedPass) {
-            alert('Email and Password cannot be empty.');
-            return;
-          }
-          // Basic email format validation
-          if (!/\S+@\S+\.\S+/.test(updatedEmail)) {
-            alert('Please enter a valid email address.');
-            return;
-          }
-          users[idx].email = updatedEmail;
-          users[idx].password = updatedPass;
-          saveUsers();
-          renderUsers();
-          alert('User updated successfully.');
-        });
+/* Delete model */
+function deleteModel(id){
+  if(!confirm('Delete model?')) return;
+  let models = getModels();
+  models = models.filter(m=>String(m.id)!==String(id));
+  setModels(models);
+  renderModels();
+}
 
-        // Delete button handler
-        const deleteBtn = row.querySelector('.delete');
-        deleteBtn.addEventListener('click', () => {
-          if(confirm(`Are you sure you want to delete user "${user.email}"?`)) {
-            users.splice(idx,1);
-            saveUsers();
-            renderUsers();
-          }
-        });
+/* Users functions */
+function renderUsers(){
+  const users = getUsers();
+  const container = document.getElementById('usersList');
+  container.innerHTML = '';
+  users.forEach(u=>{
+    const div = document.createElement('div');
+    div.style.padding='8px';
+    div.style.borderBottom='1px solid #f0f0f0';
+    div.innerHTML = `<strong>${u.email}</strong> <span class="small">(${u.role})</span>
+      <div style="margin-top:6px"><button onclick="removeUser('${u.email}')" style="padding:6px 10px;border-radius:8px;border:none;background:#dc3545;color:#fff">Remove</button></div>`;
+    container.appendChild(div);
+  });
+}
 
-        usersTableBody.appendChild(row);
-      });
-    }
+function addUser(){
+  const email = document.getElementById('u_email').value.trim();
+  const pass = document.getElementById('u_pass').value.trim();
+  const role = document.getElementById('u_role').value;
+  if(!email||!pass) return alert('Enter email and password');
+  const users = getUsers();
+  if(users.find(u=>u.email===email)) return alert('User already exists');
+  users.push({email, password:pass, role});
+  setUsers(users);
+  document.getElementById('u_email').value='';
+  document.getElementById('u_pass').value='';
+  renderUsers();
+  alert('User added');
+}
+function removeUser(email){
+  if(!confirm('Remove user?')) return;
+  let users = getUsers();
+  users = users.filter(u=>u.email!==email);
+  setUsers(users);
+  renderUsers();
+}
 
-    // Add or update user from userForm
-    userForm.addEventListener('submit', e => {
-      e.preventDefault();
+/* Export JSON of models */
+function exportModels(){
+  const data = JSON.stringify(getModels(), null, 2);
+  const blob = new Blob([data], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'models-export.json'; a.click();
+  URL.revokeObjectURL(url);
+}
 
-      const emailVal = userEmailInput.value.trim();
-      const passwordVal = userPasswordInput.value;
-
-      if (!emailVal || !passwordVal) {
-        alert('Email and Password are required.');
-        return;
-      }
-      if (!/\S+@\S+\.\S+/.test(emailVal)) {
-        alert('Please enter a valid email address.');
-        return;
-      }
-
-      // Check if user exists - update password for existing user
-      const existingIdx = users.findIndex(u => u.email.toLowerCase() === emailVal.toLowerCase());
-      if (existingIdx >= 0) {
-        users[existingIdx].password = passwordVal;
-        alert('Existing user password updated.');
-      } else {
-        users.push({ email: emailVal, password: passwordVal });
-        alert('New user added.');
-      }
-      saveUsers();
-      renderUsers();
-      clearUserForm();
-    });
-
-    // Clear user form
-    function clearUserForm() {
-      userForm.reset();
-    }
-    clearUserBtn.addEventListener('click', clearUserForm);
-
-    // Export users JSON
-    exportUsersBtn.addEventListener('click', () => {
-      const dataStr = JSON.stringify(users, null, 2);
-      const blob = new Blob([dataStr], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'users.json';
-      a.click();
-
-      URL.revokeObjectURL(url);
-    });
-
-    // --- Top buttons ---
-    const openUserPanelBtn = document.getElementById('openUserPanelBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-
-    openUserPanelBtn.addEventListener('click', () => {
-      alert('Open User Panel functionality not implemented.\nYou can navigate to your user panel here.');
-    });
-
-    logoutBtn.addEventListener('click', () => {
-      alert('Logout functionality not implemented.\nImplement logout action here.');
-    });
-
-    // Initialize all data and rendering
-    loadModels();
-    renderModels();
-
-    loadUsers();
-    renderUsers();
-
-  </script>
-
+/* initial render */
+renderModels();
+renderUsers();
+</script>
 </body>
 </html>
