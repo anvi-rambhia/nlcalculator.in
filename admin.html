@@ -1,331 +1,166 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Kore Mobiles — Admin Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
-<style>
-:root{--blue:#007bff;--green:#28a745;--red:#dc3545;--bg:#f7f9fc}
-body{font-family:'Poppins',sans-serif;margin:0;background:var(--bg);color:#111}
-.wrap{max-width:980px;margin:18px auto;padding:14px}
-.header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-h2{color:var(--blue);margin:0;font-size:1.4rem}
-.btn{padding:10px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:600}
-.primary{background:var(--blue);color:#fff}
-.logout{background:var(--red);color:#fff}
-.layout{display:grid;grid-template-columns:1fr 420px;gap:14px}
-.panel{background:#fff;border-radius:12px;padding:12px;box-shadow:0 12px 30px rgba(0,0,0,0.06)}
-.form-row{display:flex;gap:10px;flex-wrap:wrap}
-.form-row .half{flex:1;min-width:140px}
-label{font-weight:600;font-size:.95rem;margin-top:6px;display:block}
-.small{font-size:.95rem;color:#444}
-.table{width:100%;border-collapse:collapse;margin-top:8px}
-.table th,.table td{padding:8px;border-bottom:1px solid #eee;text-align:left;font-size:.95rem}
-.actions button{margin-right:6px;padding:6px 10px;border-radius:8px;border:none;cursor:pointer}
-.edit{background:#ffc107;color:#111}
-.del{background:#dc3545;color:#fff}
-.add{background:var(--green);color:#fff}
-.user-list{max-height:220px;overflow:auto;margin-top:8px}
-.note{font-size:.9rem;color:#666;margin-top:8px}
-@media(max-width:900px){.layout{grid-template-columns:1fr}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel - NLC Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f6f7fb;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      width: 90%;
+      max-width: 800px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #333;
+    }
+    label {
+      font-weight: 600;
+      margin-top: 10px;
+      display: block;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+    li {
+      background: #f1f1f1;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .price {
+      color: #555;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <h2>Admin Panel - NLC Calculator</h2>
 
-<div class="wrap">
-  <div class="header">
-    <h2>⚙️ Admin Dashboard</h2>
-    <div style="display:flex;gap:8px">
-      <a class="btn primary" href="index.html" onclick="openUserPanel()">Open User Panel</a>
-      <a class="btn logout" href="admin-login.html" onclick="adminLogout()">Logout</a>
-    </div>
+    <label for="modelName">Model Name</label>
+    <input type="text" id="modelName" placeholder="Enter Model Name" />
+
+    <label for="modelPrice">Price (Before GST)</label>
+    <input type="number" id="modelPrice" placeholder="Enter Price" />
+
+    <button id="saveBtn">💾 Save Model</button>
+
+    <h3>Saved Models</h3>
+    <ul id="modelList"></ul>
   </div>
 
-  <div class="layout">
-    <!-- Left: Models list -->
-    <div class="panel">
-      <h3 style="margin-top:0">Models</h3>
-      <div style="display:flex;gap:8px;margin-bottom:10px">
-        <input id="filterInput" placeholder="Filter by name/ram/rom" style="flex:1;padding:10px;border-radius:8px;border:1px solid #eee"/>
-        <button class="btn" onclick="renderModels()">Refresh</button>
-      </div>
-      <table class="table">
-        <thead><tr><th>Model</th><th>MOP</th><th>DP</th><th>Pre-GST DP</th><th>Sellout</th><th>Sellin</th><th>CC Offers</th><th>Banks</th><th>Actions</th></tr></thead>
-        <tbody id="modelsTbody"></tbody>
-      </table>
-      <p class="note">Models are kept in localStorage for testing. You can export JSON if needed.</p>
-    </div>
+  <!-- Firebase Firestore Integration -->
+  <script type="module">
+    // Import Firebase modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
-    <!-- Right: Add / Edit Model & Users -->
-    <div class="panel">
-      <h3 style="margin-top:0">Add / Edit Model</h3>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyByEiFSbsDlrCtVJjZgvbCoYPt_io2CpTk",
+      authDomain: "nlcalulator.firebaseapp.com",
+      projectId: "nlcalulator",
+      storageBucket: "nlcalulator.firebasestorage.app",
+      messagingSenderId: "783940164431",
+      appId: "1:783940164431:web:edd9e24a8e6901942b433a",
+    };
 
-      <div>
-        <label>Model Name</label>
-        <input id="m_name" placeholder="e.g. Galaxy S24" />
-      </div>
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-      <div class="form-row">
-        <div class="half">
-          <label>MOP (₹)</label>
-          <input id="m_mop" type="number" />
-        </div>
-        <div class="half">
-          <label>DP (₹)</label>
-          <input id="m_dp" type="number" oninput="calcPreGst()" />
-        </div>
-      </div>
+    // Save Model to Firestore
+    async function saveModel() {
+      const name = document.getElementById("modelName").value.trim();
+      const price = document.getElementById("modelPrice").value.trim();
 
-      <div class="form-row">
-        <div class="half">
-          <label>Pre-GST DP (auto)</label>
-          <input id="m_preGst" readonly />
-        </div>
-        <div class="half">
-          <label>Sellout Scheme (₹)</label>
-          <input id="m_sellout" type="number" />
-        </div>
-      </div>
+      if (!name || !price) {
+        alert("⚠️ Please fill all fields");
+        return;
+      }
 
-      <div>
-        <label>Sellin / Purchase Scheme (₹)</label>
-        <input id="m_sellin" type="number" />
-      </div>
+      try {
+        await addDoc(collection(db, "models"), {
+          name: name,
+          price: price,
+          timestamp: new Date(),
+        });
 
-      <hr style="margin:12px 0"/>
-
-      <h4 style="margin:6px 0">Credit Card Offers</h4>
-      <div class="form-row">
-        <div class="half">
-          <label>No Cost EMI Amount (₹)</label>
-          <input id="m_cc_no" type="number" />
-        </div>
-        <div class="half">
-          <label>Full Swipe Amount (₹)</label>
-          <input id="m_cc_full" type="number" />
-        </div>
-      </div>
-
-      <div style="margin-top:8px">
-        <label>Eligible Banks (comma separated)</label>
-        <textarea id="m_banks" rows="3" placeholder="e.g. HDFC, SBI, ICICI"></textarea>
-      </div>
-
-      <div style="display:flex;gap:8px;margin-top:12px">
-        <button class="btn add" onclick="saveModel()">Save Model</button>
-        <button class="btn" onclick="clearModelForm()">Clear</button>
-        <button class="btn" onclick="exportModels()">Export JSON</button>
-      </div>
-
-      <hr style="margin:14px 0"/>
-
-      <h3 style="margin-top:0">Users</h3>
-      <label>Email</label>
-      <input id="u_email" placeholder="email@example.com" />
-      <label>Password</label>
-      <input id="u_pass" placeholder="password" />
-      <label>Role</label>
-      <select id="u_role">
-        <option value="user">User</option>
-        <option value="admin">Admin</option>
-      </select>
-      <div style="display:flex;gap:8px;margin-top:10px">
-        <button class="btn primary" onclick="addUser()">Add User</button>
-        <button class="btn" onclick="renderUsers()">Show Users</button>
-      </div>
-
-      <div class="user-list" id="usersList"></div>
-      <p class="note">Users and models are stored in localStorage for now so they persist across browser sessions for testing.</p>
-    </div>
-  </div>
-</div>
-
-<script>
-/* --- Helpers for storage --- */
-function getModels(){ return JSON.parse(localStorage.getItem('kore_models')||'[]'); }
-function setModels(arr){ localStorage.setItem('kore_models', JSON.stringify(arr)); }
-function getUsers(){ return JSON.parse(localStorage.getItem('kore_users')||'[]'); }
-function setUsers(arr){ localStorage.setItem('kore_users', JSON.stringify(arr)); }
-
-/* Ensure default admin exists to let you login */
-(function ensureDefaults(){
-  const users = getUsers();
-  if(!users.find(u=>u.role==='admin')){
-    users.push({email:'admin@koremobiles.com',password:'1234',role:'admin'});
-    setUsers(users);
-  }
-  if(!localStorage.getItem('kore_models')){
-    const demo = [
-      {id:Date.now()+1,name:"Samsung S24",mop:70000,dp:56000,preGstDp:(56000/1.18).toFixed(2),selloutScheme:2000,sellinScheme:1500,ccNoCost:2000,ccFullSwipe:1500,eligibleBanks:"HDFC, SBI", ram:"8GB", rom:"128GB"},
-      {id:Date.now()+2,name:"iPhone 15",mop:79999,dp:62000,preGstDp:(62000/1.18).toFixed(2),selloutScheme:3000,sellinScheme:2500,ccNoCost:2500,ccFullSwipe:1800,eligibleBanks:"HDFC, ICICI", ram:"6GB", rom:"128GB"}
-    ];
-    setModels(demo);
-  }
-})();
-
-/* Open user panel */
-function openUserPanel(){ window.location.href='index.html'; }
-
-/* Admin logout */
-function adminLogout(){
-  sessionStorage.removeItem('kore_session_admin');
-  window.location.href='admin-login.html';
-}
-
-/* Render models into table */
-function renderModels(){
-  const tbody = document.getElementById('modelsTbody');
-  const all = getModels();
-  const q = (document.getElementById('filterInput').value || '').toLowerCase();
-  const list = q ? all.filter(m=> (m.name||'').toLowerCase().includes(q) || (m.ram||'').toLowerCase().includes(q) || (m.rom||'').toLowerCase().includes(q)) : all;
-  tbody.innerHTML = '';
-  list.forEach(m=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td><strong>${m.name}</strong><div class="small">${m.ram||''}/${m.rom||''}</div></td>
-      <td>₹${m.mop||0}</td>
-      <td>₹${m.dp||0}</td>
-      <td>₹${m.preGstDp||0}</td>
-      <td>₹${m.selloutScheme||0}</td>
-      <td>₹${m.sellinScheme||0}</td>
-      <td>NoCost:${m.ccNoCost||0}<br>Full:${m.ccFullSwipe||0}</td>
-      <td>${m.eligibleBanks||''}</td>
-      <td class="actions"><button class="edit" onclick="editModel(${m.id})">Edit</button><button class="del" onclick="deleteModel(${m.id})">Delete</button></td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-/* Clear form */
-function clearModelForm(){
-  ['m_name','m_mop','m_dp','m_preGst','m_sellout','m_sellin','m_cc_no','m_cc_full','m_banks','m_ram','m_rom'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('m_name').dataset.editId = '';
-  document.getElementById('m_name').focus();
-}
-
-/* Save model (add or update) */
-function saveModel(){
-  const name = document.getElementById('m_name').value.trim();
-  if(!name) return alert('Enter model name');
-  const mop = Number(document.getElementById('m_mop').value) || 0;
-  const dp = Number(document.getElementById('m_dp').value) || 0;
-  const pre = (dp? (dp/1.18).toFixed(2) : '');
-  const sellout = Number(document.getElementById('m_sellout').value) || 0;
-  const sellin = Number(document.getElementById('m_sellin').value) || 0;
-  const ccNo = Number(document.getElementById('m_cc_no').value) || 0;
-  const ccFull = Number(document.getElementById('m_cc_full').value) || 0;
-  const banks = document.getElementById('m_banks').value.trim();
-  const ram = document.getElementById('m_ram').value.trim();
-  const rom = document.getElementById('m_rom').value.trim();
-
-  const models = getModels();
-  const editId = document.getElementById('m_name').dataset.editId;
-  if(editId){
-    const idx = models.findIndex(x=>String(x.id)===String(editId));
-    if(idx>-1){
-      models[idx] = Object.assign(models[idx], {name, mop, dp, preGstDp:pre, selloutScheme:sellout, sellinScheme:sellin, ccNoCost:ccNo, ccFullSwipe:ccFull, eligibleBanks:banks, ram, rom});
-      setModels(models);
-      renderModels();
-      clearModelForm();
-      return alert('Model updated');
+        alert("✅ Model Saved Successfully!");
+        document.getElementById("modelName").value = "";
+        document.getElementById("modelPrice").value = "";
+        fetchModels(); // Refresh list
+      } catch (error) {
+        console.error("Error saving model:", error);
+        alert("❌ Failed to save model. Check console for details.");
+      }
     }
-  }
 
-  const newModel = { id: Date.now()+Math.floor(Math.random()*999), name, mop, dp, preGstDp:pre, selloutScheme:sellout, sellinScheme:sellin, ccNoCost:ccNo, ccFullSwipe:ccFull, eligibleBanks:banks, ram, rom };
-  models.push(newModel);
-  setModels(models);
-  renderModels();
-  clearModelForm();
-  alert('Model added');
-}
+    // Fetch and Display Models
+    async function fetchModels() {
+      const modelList = document.getElementById("modelList");
+      modelList.innerHTML = "<li>Loading...</li>";
 
-/* calculate Pre-GST on input */
-function calcPreGst(){
-  const dp = Number(document.getElementById('m_dp').value) || 0;
-  const pre = dp? (dp/1.18).toFixed(2) : '';
-  document.getElementById('m_preGst').value = pre;
-}
+      const querySnapshot = await getDocs(collection(db, "models"));
+      modelList.innerHTML = "";
 
-/* Edit model */
-function editModel(id){
-  const models = getModels();
-  const m = models.find(x=>String(x.id)===String(id));
-  if(!m) return alert('Model not found');
-  document.getElementById('m_name').value = m.name;
-  document.getElementById('m_mop').value = m.mop||'';
-  document.getElementById('m_dp').value = m.dp||'';
-  document.getElementById('m_preGst').value = m.preGstDp||'';
-  document.getElementById('m_sellout').value = m.selloutScheme||'';
-  document.getElementById('m_sellin').value = m.sellinScheme||'';
-  document.getElementById('m_cc_no').value = m.ccNoCost||'';
-  document.getElementById('m_cc_full').value = m.ccFullSwipe||'';
-  document.getElementById('m_banks').value = m.eligibleBanks||'';
-  document.getElementById('m_ram').value = m.ram||'';
-  document.getElementById('m_rom').value = m.rom||'';
-  document.getElementById('m_name').dataset.editId = m.id;
-  window.scrollTo({top:0,behavior:'smooth'});
-}
+      querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <span>${data.name}</span>
+          <span class="price">₹${data.price}</span>
+        `;
+        modelList.appendChild(li);
+      });
 
-/* Delete model */
-function deleteModel(id){
-  if(!confirm('Delete model?')) return;
-  let models = getModels();
-  models = models.filter(m=>String(m.id)!==String(id));
-  setModels(models);
-  renderModels();
-}
+      if (modelList.innerHTML === "") {
+        modelList.innerHTML = "<li>No models saved yet.</li>";
+      }
+    }
 
-/* Users functions */
-function renderUsers(){
-  const users = getUsers();
-  const container = document.getElementById('usersList');
-  container.innerHTML = '';
-  users.forEach(u=>{
-    const div = document.createElement('div');
-    div.style.padding='8px';
-    div.style.borderBottom='1px solid #f0f0f0';
-    div.innerHTML = `<strong>${u.email}</strong> <span class="small">(${u.role})</span>
-      <div style="margin-top:6px"><button onclick="removeUser('${u.email}')" style="padding:6px 10px;border-radius:8px;border:none;background:#dc3545;color:#fff">Remove</button></div>`;
-    container.appendChild(div);
-  });
-}
-
-function addUser(){
-  const email = document.getElementById('u_email').value.trim();
-  const pass = document.getElementById('u_pass').value.trim();
-  const role = document.getElementById('u_role').value;
-  if(!email||!pass) return alert('Enter email and password');
-  const users = getUsers();
-  if(users.find(u=>u.email===email)) return alert('User already exists');
-  users.push({email, password:pass, role});
-  setUsers(users);
-  document.getElementById('u_email').value='';
-  document.getElementById('u_pass').value='';
-  renderUsers();
-  alert('User added');
-}
-function removeUser(email){
-  if(!confirm('Remove user?')) return;
-  let users = getUsers();
-  users = users.filter(u=>u.email!==email);
-  setUsers(users);
-  renderUsers();
-}
-
-/* Export JSON of models */
-function exportModels(){
-  const data = JSON.stringify(getModels(), null, 2);
-  const blob = new Blob([data], {type: 'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'models-export.json'; a.click();
-  URL.revokeObjectURL(url);
-}
-
-/* initial render */
-renderModels();
-renderUsers();
-</script>
+    // Event listeners
+    document.getElementById("saveBtn").addEventListener("click", saveModel);
+    document.addEventListener("DOMContentLoaded", fetchModels);
+  </script>
 </body>
 </html>
