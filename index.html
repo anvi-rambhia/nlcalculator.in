@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Kore Mobiles — User</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--blue:#007bff;--green:#28a745;--red:#dc3545;--gray:#f2f4f7}
+body{font-family:'Poppins',sans-serif;margin:0;background:var(--gray);font-size:20px}
+.container{max-width:700px;margin:36px auto;background:#fff;padding:26px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,0.12)}
+h2{text-align:center;color:var(--blue);margin-bottom:18px;font-size:1.5rem}
+input,button,select,textarea{width:97%;padding:12px;margin:8px 0;border-radius:10px;border:1px solid #ccc;font-size:1.15rem}
+button{background:var(--blue);color:#fff;border:none;cursor:pointer;font-weight:600;transition:.18s}
+button:hover{transform:scale(1.02);background:#0056b3}
+.logout{background:var(--red);margin-bottom:12px}
+.hidden{display:none}
+.results{display:grid;gap:14px;margin-top:18px}
+.card{background:#fbfbfd;border-radius:12px;padding:16px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+.card strong{color:var(--blue);font-size:1.4rem}
+.small{font-size:1.25rem;color:#444}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.inline-input{width:86px;padding:8px;text-align:center;border-radius:8px}
+.custom-nlc{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-start}
+.custom-nlc button{padding:10px 18px;background:var(--green)}
+.custom-result{margin-top:10px;text-align:center;font-weight:700;color:#111;font-size:1.3rem}
+.suggestions{position:absolute;background:#fff;border:1px solid #ddd;border-radius:8px;max-height:160px;overflow:auto;width:calc(100% - 28px);z-index:1000}
+.suggestion-item{padding:10px;cursor:pointer}
+.suggestion-item:hover{background:#f3f6fb}
+.note{font-size:.9rem;color:#666;margin-top:6px}
+@media(max-width:760px){.container{margin:18px;padding:18px}h2{font-size:1.35rem}.custom-result{font-size:1.15rem}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN BOX -->
+<div class="container" id="loginBox">
+  <h2>🔐 User Login</h2>
+  <input id="email" type="email" placeholder="Email" />
+  <input id="password" type="password" placeholder="Password" />
+  <button onclick="login()">Login</button>
+  <p style="text-align:center;margin-top:8px">Admin? <a href="admin-login.html">Go to Admin Panel</a></p>
+  <p class="note">Demo users available: <b>user@koremobiles.com / 1234</b> and <b>sales@koremobiles.com / 1234</b></p>
+</div>
+
+<!-- SEARCH / RESULTS -->
+<div class="container hidden" id="searchBox">
+  <h2>📱 Search Mobile Models</h2>
+  <button class="logout" onclick="logoutUser()">Logout</button>
+
+  <div style="position:relative">
+    <input id="searchInput" type="text" placeholder="Search by model name, RAM or ROM (e.g. S24 8GB 128GB)" oninput="showSuggestions()" />
+    <div id="suggestions" class="suggestions hidden"></div>
+  </div>
+
+  <button onclick="search()">Search</button>
+
+  <div id="results" class="results hidden"></div>
+  <p class="note">If no models present, ask admin to add models in Admin Panel (admin.html).</p>
+</div>
+
+<script>
+/* ===== Session storage keys used:
+   'kore_models' => array of model objects
+   'kore_users'  => array of user objects (for login)
+   'kore_session_user' => currently logged user email
+*/
+
+/* --- bootstrap default data --- */
+(function initDefaults(){
+  if(!sessionStorage.getItem('kore_users')){
+    const demoUsers=[
+      {email:'admin@koremobiles.com',password:'1234',role:'admin'},
+      {email:'user@koremobiles.com',password:'1234',role:'user'},
+      {email:'sales@koremobiles.com',password:'1234',role:'user'}
+    ];
+    sessionStorage.setItem('kore_users', JSON.stringify(demoUsers));
+  }
+  if(!sessionStorage.getItem('kore_models')){
+    const demoModels=[
+      {
+        id: Date.now()+1,
+        name:"Samsung S24",
+        ram:"8GB",
+        rom:"128GB",
+        mop:70000,
+        dp:56000,
+        preGstDp:+(56000/1.18).toFixed(2),
+        selloutScheme:2000,
+        sellinScheme:1500,
+        ccNoCost:2000,
+        ccFullSwipe:1500,
+        eligibleBanks:"HDFC, ICICI, SBI Cards"
+      },
+      {
+        id: Date.now()+2,
+        name:"iPhone 15",
+        ram:"6GB",
+        rom:"128GB",
+        mop:79999,
+        dp:62000,
+        preGstDp:+(62000/1.18).toFixed(2),
+        selloutScheme:3000,
+        sellinScheme:2500,
+        ccNoCost:2500,
+        ccFullSwipe:1800,
+        eligibleBanks:"HDFC Bank, Axis Bank, ICICI Bank"
+      }
+    ];
+    sessionStorage.setItem('kore_models', JSON.stringify(demoModels));
+  }
+})();
+
+/* --- Utility --- */
+function getModels(){ return JSON.parse(sessionStorage.getItem('kore_models')||'[]'); }
+function getUsers(){ return JSON.parse(sessionStorage.getItem('kore_users')||'[]'); }
+
+/* --- Auto-login --- */
+if(sessionStorage.getItem('kore_session_user')){
+  document.getElementById('loginBox').classList.add('hidden');
+  document.getElementById('searchBox').classList.remove('hidden');
+}
+
+/* --- Login --- */
+function login(){
+  const email=document.getElementById('email').value.trim();
+  const password=document.getElementById('password').value.trim();
+  if(!email||!password) return alert('Enter credentials');
+
+  const users=getUsers();
+  const found=users.find(u=>u.email===email && u.password===password);
+  if(found){
+    sessionStorage.setItem('kore_session_user', email);
+    document.getElementById('loginBox').classList.add('hidden');
+    document.getElementById('searchBox').classList.remove('hidden');
+  } else {
+    alert('❌ Invalid credentials.');
+  }
+}
+
+/* --- Logout --- */
+function logoutUser(){
+  sessionStorage.removeItem('kore_session_user');
+  document.getElementById('searchBox').classList.add('hidden');
+  document.getElementById('loginBox').classList.remove('hidden');
+}
+
+/* --- Search + render --- */
+function search(){
+  const q=document.getElementById('searchInput').value.trim().toLowerCase();
+  const resultsDiv=document.getElementById('results');
+  resultsDiv.innerHTML='';
+  if(!q) return alert('Enter a model');
+
+  const all=getModels();
+  const qParts=q.split(/\s+/);
+  const matched=all.filter(m => qParts.every(p =>
+    (m.name||'').toLowerCase().includes(p) ||
+    (m.ram||'').toLowerCase().includes(p) ||
+    (m.rom||'').toLowerCase().includes(p)
+  ));
+
+  if(matched.length===0){
+    resultsDiv.innerHTML=`<div class="card"><p style="text-align:center">No models found for <strong>${q}</strong></p></div>`;
+  } else {
+    matched.forEach((v,idx)=>{
+      resultsDiv.innerHTML += `
+        <div class="card" id="card-${v.id}">
+          <strong>${v.name}</strong> <span class="small">(${v.ram}/${v.rom})</span><br>
+          <div class="small">MOP: ₹${v.mop} &nbsp; | &nbsp; DP: ₹${v.dp} &nbsp; | &nbsp; Pre-GST DP: ₹${v.preGstDp}</div>
+          <div style="margin-top:8px" class="small">
+            Sellout Scheme: ₹${v.selloutScheme || 0} &nbsp; | &nbsp;
+            Sellin/Purchase Scheme: ₹${v.sellinScheme || 0}
+          </div>
+
+          <div style="margin-top:10px" class="small">
+            <b>Credit Card Offer:</b><br>
+            No Cost EMI: ₹${v.ccNoCost || 0} &nbsp; | &nbsp; Full Swipe: ₹${v.ccFullSwipe || 0}<br>
+            <span style="font-size:1.25rem;color:#333">
+              <b>Eligible Banks:</b> ${v.eligibleBanks || 'Not specified'}
+            </span>
+          </div>
+
+          <div class="custom-nlc" style="margin-top:12px">
+            <label style="font-weight:600">Calculate Final NLC:</label>
+            <input class="inline-input" type="number" id="percent-${v.id}" placeholder="1-20" min="1" max="20">
+            <span style="font-weight:700">%</span>
+            <button onclick="calcCustom(${v.mop}, ${v.preGstDp}, '${v.name}', ${v.id})" style="padding:9px 18px">Calculate</button>
+          </div>
+          <div id="customResult-${v.id}" class="custom-result"></div>
+        </div>
+      `;
+    });
+  }
+  resultsDiv.classList.remove('hidden');
+}
+
+/* --- Custom NLC Logic --- */
+function calcCustom(mop, preGstDp, name, id){
+  const percentInput = document.getElementById(`percent-${id}`);
+  const val = parseFloat(percentInput.value);
+  const resultDiv = document.getElementById(`customResult-${id}`);
+  if(isNaN(val) || val<=0) return alert('Enter a valid percentage');
+
+  // ✅ New Logic:
+  // For iPhones → calculate on MOP
+  // For all other models → calculate on Pre-GST DP
+  const base = name.toLowerCase().includes('iphone') ? mop : preGstDp;
+  const finalNLC = base - (base * (val / 100));
+
+  resultDiv.innerHTML = `Final NLC (${val}% on ${name.toLowerCase().includes('iphone') ? 'MOP' : 'Pre-GST DP'}): <span style="font-size:1.35rem;color:#000">₹${finalNLC.toFixed(2)}</span>`;
+}
+
+/* --- Suggestions --- */
+function showSuggestions(){
+  const input = document.getElementById('searchInput').value.trim().toLowerCase();
+  const sugBox = document.getElementById('suggestions');
+  if(!input){ sugBox.classList.add('hidden'); return; }
+  const all=getModels();
+  const matched = all.filter(m => (m.name||'').toLowerCase().includes(input) || (m.ram||'').toLowerCase().includes(input) || (m.rom||'').toLowerCase().includes(input));
+  if(matched.length===0){ sugBox.classList.add('hidden'); return; }
+  sugBox.innerHTML='';
+  matched.slice(0,8).forEach(m=>{
+    const div=document.createElement('div');
+    div.className='suggestion-item';
+    div.textContent = `${m.name} ${m.ram} ${m.rom}`;
+    div.onclick = ()=>{ document.getElementById('searchInput').value = div.textContent; sugBox.classList.add('hidden'); };
+    sugBox.appendChild(div);
+  });
+  sugBox.classList.remove('hidden');
+}
+</script>
+</body>
+</html>

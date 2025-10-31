@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Kore Mobiles — Admin Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+body{font-family:'Poppins',sans-serif;background:#f0f2f5;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
+.container{width:95%;max-width:420px;background:#fff;padding:22px;border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,0.08)}
+h2{text-align:center;color:#007bff;margin-bottom:12px}
+input,button{width:97%;padding:12px;margin:8px 0;border-radius:8px;border:1px solid #e0e3e8;font-size:1rem}
+button{background:#007bff;color:#fff;border:none;cursor:pointer;font-weight:600}
+button:hover{background:#0056b3}
+.note{font-size:.9rem;color:#666;text-align:center;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>🔑 Admin Login</h2>
+  <input id="adminEmail" type="email" placeholder="Email" />
+  <input id="adminPassword" type="password" placeholder="Password" />
+  <button onclick="loginAdmin()">Login</button>
+  <p style="text-align:center;margin-top:8px">User? <a href="index.html">Go to User Panel</a></p>
+  <p class="note">Default admin (if none exist): <b>admin@koremobiles.com / 1234</b></p>
+</div>
+
+<script>
+/* Ensure a default admin exists in localStorage */
+(function ensureAdmin(){
+  const users = JSON.parse(localStorage.getItem('kore_users')||'[]');
+  if(!users.find(u=>u.role==='admin')) {
+    users.push({email:'admin@koremobiles.com',password:'1234',role:'admin'});
+    localStorage.setItem('kore_users', JSON.stringify(users));
+  }
+})();
+
+function loginAdmin(){
+  const email=document.getElementById('adminEmail').value.trim();
+  const password=document.getElementById('adminPassword').value.trim();
+  if(!email||!password) return alert('Enter admin credentials');
+
+  const users = JSON.parse(localStorage.getItem('kore_users')||'[]');
+  const valid = users.find(u=>u.email===email && u.password===password && u.role==='admin');
+  if(valid){
+    sessionStorage.setItem('kore_session_admin', email);
+    window.location.href = 'admin.html';
+  } else {
+    alert('❌ Invalid admin credentials');
+  }
+}
+</script>
+</body>
+</html>
