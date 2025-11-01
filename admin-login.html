@@ -50,5 +50,27 @@ function loginAdmin(){
   }
 }
 </script>
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyByEiFSbsDlrCtVJjZgvbCoYPt_io2CpTk",
+    authDomain: "nlcalulator.firebaseapp.com",
+    projectId: "nlcalulator",
+    storageBucket: "nlcalulator.firebasestorage.app",
+    messagingSenderId: "783940164431",
+    appId: "1:783940164431:web:edd9e24a8e6901942b433a",
+    measurementId: "G-D8CXJYMPG0"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  window.db = getFirestore(app);
+  window.auth = getAuth(app);
+</script>
+
 </body>
 </html>
+
