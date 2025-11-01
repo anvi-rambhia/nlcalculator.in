@@ -1,52 +1,40 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Login | Kore Mobiles</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Kore Mobiles — Admin Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-    body {
-      display: flex; align-items: center; justify-content: center;
-      height: 100vh; background: linear-gradient(135deg, #004aad, #0099ff);
-    }
-    .login-box {
-      background: #fff; padding: 40px; border-radius: 12px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.15); width: 320px;
-      text-align: center;
-    }
-    h2 { color: #004aad; margin-bottom: 25px; }
-    input {
-      width: 100%; padding: 12px; margin-bottom: 15px;
-      border: 1px solid #ccc; border-radius: 8px; font-size: 14px;
-    }
-    button {
-      width: 100%; background: #004aad; color: white;
-      padding: 12px; border: none; border-radius: 8px;
-      font-weight: 600; cursor: pointer; transition: 0.3s;
-    }
-    button:hover { background: #00327a; }
-    p { color: red; font-size: 13px; margin-top: 10px; }
+    body{font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#0b63d6,#00a0ff);height:100vh;margin:0;display:flex;align-items:center;justify-content:center}
+    .card{background:#fff;padding:28px;border-radius:12px;box-shadow:0 10px 30px rgba(2,6,23,0.15);width:360px}
+    h2{color:#0b63d6;margin:0 0 16px 0;text-align:center}
+    input{width:100%;padding:12px;border-radius:8px;border:1px solid #e6eefb;margin-bottom:12px;font-size:15px}
+    button{width:100%;padding:12px;border-radius:8px;border:none;background:#0b63d6;color:#fff;font-weight:600;cursor:pointer}
+    button:hover{opacity:.95}
+    .msg{height:18px;margin-top:10px;text-align:center;font-size:13px}
+    .note{margin-top:10px;color:#666;font-size:13px;text-align:center}
+    a.small{display:block;margin-top:8px;text-align:center;color:#0b63d6}
   </style>
 </head>
 <body>
-
-  <div class="login-box">
+  <div class="card">
     <h2>Admin Login</h2>
-    <input type="email" id="email" placeholder="Enter Email" />
-    <input type="password" id="password" placeholder="Enter Password" />
-    <button id="loginBtn">Login</button>
-    <p id="errorMsg"></p>
+    <input id="email" type="email" placeholder="admin email (e.g. anvi@koremobiles.com)" />
+    <input id="password" type="password" placeholder="Password" />
+    <button id="loginBtn">Sign in</button>
+    <div class="msg" id="msg"></div>
+    <div class="note">Make sure Email/Password sign-in is enabled in Firebase Auth</div>
+    <a class="small" href="admin.html">(Skip to admin.html)</a>
   </div>
 
   <script type="module">
-    // Import Firebase libraries
+    // ---------- Imports ----------
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
-    // Your Firebase config
+    // ---------- Firebase config (your project) ----------
     const firebaseConfig = {
       apiKey: "AIzaSyByEiFSbsDlrCtVJjZgvbCoYPt_io2CpTk",
       authDomain: "nlcalulator.firebaseapp.com",
@@ -57,42 +45,77 @@
       measurementId: "G-D8CXJYMPG0"
     };
 
-    // Initialize Firebase
+    // ---------- Init ----------
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+    const auth = getAuth(app);           // <-- required (fixes "auth is not defined")
     const db = getFirestore(app);
 
-    const loginBtn = document.getElementById("loginBtn");
-    const errorMsg = document.getElementById("errorMsg");
+    // ---------- Elements ----------
+    const loginBtn = document.getElementById('loginBtn');
+    const msg = document.getElementById('msg');
 
-    loginBtn.addEventListener("click", async () => {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
+    // ---------- Login flow ----------
+    loginBtn.addEventListener('click', async () => {
+      msg.style.color = '#0b63d6';
+      msg.textContent = 'Signing in...';
 
-      if (!email || !password) {
-        errorMsg.textContent = "Please enter email and password.";
-        return;
-      }
+      const email = (document.getElementById('email').value || '').trim();
+      const password = (document.getElementById('password').value || '').trim();
+      if(!email || !password){ msg.style.color='red'; msg.textContent='Enter email and password'; return; }
 
       try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
+        // Sign in with Firebase Auth
+        const ucred = await signInWithEmailAndPassword(auth, email, password);
+        const user = ucred.user;
+        console.log('Signed in user:', user.email, user.uid);
 
-        // Check if user is admin
-        const docRef = doc(db, "admins", email);
-        const docSnap = await getDoc(docRef);
+        // Verify admin in Firestore by checking admins collection for matching email
+        const adminsRef = collection(db, 'admins');
+        const q = query(adminsRef, where('email', '==', user.email.toLowerCase()));
+        const snap = await getDocs(q);
 
-        if (docSnap.exists()) {
-          alert("Login successful! Redirecting...");
-          window.location.href = "admin.html";
-        } else {
-          errorMsg.textContent = "Access denied. Not an admin.";
+        if(snap.empty){
+          // fallback: try checking doc with UID as ID (if you used UID doc)
+          // Optional: you might have admins/{uid} doc. We'll check that too:
+          const q2 = query(adminsRef, where('uid', '==', user.uid));
+          const snap2 = await getDocs(q2);
+          if(snap2.empty){
+            // not an admin
+            msg.style.color = 'red';
+            msg.textContent = 'Access denied — admin record not found in Firestore (collection: admins).';
+            // sign out the user session for safety
+            try { await auth.signOut(); } catch(e){ console.warn('signOut failed', e); }
+            return;
+          }
         }
-      } catch (error) {
-        errorMsg.textContent = error.message;
+
+        // OK admin -> set session flag and go to admin page
+        sessionStorage.setItem('kore_admin_email', user.email);
+        msg.style.color = 'green';
+        msg.textContent = 'Login OK — redirecting to admin panel...';
+        setTimeout(()=> window.location.href = 'admin.html', 700);
+
+      } catch(err){
+        console.error('Login error', err);
+        msg.style.color = 'red';
+        // show friendly message
+        if(err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
+          msg.textContent = 'Invalid email or password';
+        } else if(err.code === 'auth/network-request-failed') {
+          msg.textContent = 'Network error — check your connection';
+        } else {
+          msg.textContent = err.message || 'Login failed';
+        }
       }
     });
-  </script>
 
+    // ---------- Helpful dev check ----------
+    // If this page is opened via file://, module imports will fail. Detect and warn:
+    if(location.protocol === 'file:'){
+      const m = document.getElementById('msg');
+      m.style.color = 'orange';
+      m.textContent = 'Warning: open this page via http://localhost not file:// — run a local server.';
+    }
+  </script>
 </body>
 </html>
