@@ -266,5 +266,27 @@ window.clearUserForm=()=>{userEditId=null;['u_name','u_email','u_password','u_ro
 
 loadUsers();
 </script>
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, updateDoc, deleteDoc, getDocs, getDoc, doc, query, orderBy } 
+    from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+
+  // your firebaseConfig here
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // ✅ make the function global
+  window.saveUser = async function() {
+    // your add/update code
+    alert("saveUser is now working!");
+  };
+
+  // if you have loadUsers etc., also export them:
+  window.loadUsers = async function() { /* ... */ };
+  window.editUser  = async function(id) { /* ... */ };
+  window.deleteUser = async function(id) { /* ... */ };
+</script>
+
 </body>
 </html>
+
