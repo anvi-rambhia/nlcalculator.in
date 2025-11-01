@@ -190,25 +190,23 @@ window.saveModel = async function(){
   const banksText = document.getElementById('m_banks').value.trim() || '';
   const eligibleBanks = banksText ? banksText.split(',').map(b=>b.trim()).filter(Boolean) : [];
 
-  const payload = {
-    name, mop, dp, preGstDp, sellout, sellin, ram, rom, ccNo, ccFull, eligibleBanks, updatedAt: new Date()
-  };
+  const payload = { name, mop, dp, preGstDp, sellout, sellin, ram, rom, ccNo, ccFull, eligibleBanks, updatedAt: new Date() };
 
   try {
-    if(editId){
+    if (editId) {
       const ref = doc(db, collectionName, editId);
       await updateDoc(ref, payload);
       alert('✅ Model updated successfully');
-      editId = null;
     } else {
-      await addDoc(collection(db, collectionName), payload);
-      alert('✅ Model added successfully');
+      const docRef = await addDoc(collection(db, collectionName), payload);
+      alert('✅ Model added successfully — id: ' + docRef.id);
     }
     clearForm();
     loadModels();
-  } catch(err){
-    console.error('Save error', err);
-    alert('❌ Error saving model — check console');
+  } catch (err) {
+    // show full error in UI + console
+    console.error('Firestore save error:', err);
+    alert('Error saving model — check console.\\n' + (err && err.message ? err.message : JSON.stringify(err)));
   }
 };
 
@@ -358,3 +356,4 @@ loadModels();
 </script>
 </body>
 </html>
+
