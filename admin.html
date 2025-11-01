@@ -38,15 +38,22 @@ input,select{width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;marg
     </div>
   </div>
 
+  <!-- MODELS PANEL -->
   <div id="modelsPanel" class="layout">
     <div class="panel">
       <h3>Models</h3>
       <table class="table">
-        <thead><tr><th>Model</th><th>MOP</th><th>DP</th><th>Pre-GST DP</th><th>Sellout</th><th>Sellin</th><th>Actions</th></tr></thead>
+        <thead>
+          <tr>
+            <th>Model</th><th>MOP</th><th>DP</th><th>Pre-GST DP</th><th>Sellout</th><th>Sellin</th>
+            <th>No Cost EMI</th><th>Full Swipe</th><th>Eligible Banks</th><th>Actions</th>
+          </tr>
+        </thead>
         <tbody id="modelsTbody"></tbody>
       </table>
       <p class="note">Data is saved to Firestore collection <code>mobileModels</code>.</p>
     </div>
+
     <div class="panel">
       <h3>Add / Edit Model</h3>
       <label>Model Name</label><input id="m_name"/>
@@ -55,10 +62,17 @@ input,select{width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;marg
       <label>Pre-GST DP (auto)</label><input id="m_preGst" readonly/>
       <label>Sellout (₹)</label><input id="m_sellout" type="number"/>
       <label>Sellin (₹)</label><input id="m_sellin" type="number"/>
+
+      <!-- New Fields -->
+      <label>Credit Card Offer — No Cost EMI (₹)</label><input id="m_noCostEmi" type="number"/>
+      <label>Credit Card Offer — Full Swipe (₹)</label><input id="m_fullSwipe" type="number"/>
+      <label>Eligible Banks (comma separated)</label><input id="m_eligibleBanks" placeholder="HDFC, ICICI, SBI"/>
+
       <button class="btn add" onclick="saveModel()">Save Model</button>
     </div>
   </div>
 
+  <!-- USERS PANEL -->
   <div id="usersPanel" class="layout" style="display:none">
     <div class="panel">
       <h3>Users</h3>
@@ -83,7 +97,7 @@ import {
   getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import {
-  getAuth, createUserWithEmailAndPassword, deleteUser, signInWithEmailAndPassword, signOut
+  getAuth, createUserWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 // Firebase Config
@@ -102,63 +116,66 @@ const auth = getAuth(app);
 
 let editModelId = null;
 
-// Load models
+// ==================== MODELS ====================
 async function loadModels(){
-  const tbody = document.getElementById('modelsTbody');
-  tbody.innerHTML = '<tr><td colspan="7">Loading...</td></tr>';
-  const snap = await getDocs(collection(db, 'mobileModels'));
-  tbody.innerHTML = '';
+  const tbody=document.getElementById('modelsTbody');
+  tbody.innerHTML='<tr><td colspan="10">Loading...</td></tr>';
+  const snap=await getDocs(collection(db,'mobileModels'));
+  tbody.innerHTML='';
   snap.forEach(docSnap=>{
-    const m = docSnap.data();
-    const id = docSnap.id;
-    const row = `<tr>
+    const m=docSnap.data(); const id=docSnap.id;
+    const row=`<tr>
       <td>${m.name||''}</td><td>₹${m.mop||0}</td><td>₹${m.dp||0}</td>
       <td>₹${m.preGstDp||0}</td><td>₹${m.sellout||0}</td><td>₹${m.sellin||0}</td>
+      <td>₹${m.noCostEmi||0}</td><td>₹${m.fullSwipe||0}</td>
+      <td>${(m.eligibleBanks||[]).join(', ')}</td>
       <td>
-        <button class='edit' onclick="startEditModel('${id}','${m.name}',${m.mop},${m.dp},${m.sellout},${m.sellin})">Edit</button>
+        <button class='edit' onclick="startEditModel('${id}','${m.name}',${m.mop},${m.dp},${m.sellout},${m.sellin},${m.noCostEmi||0},${m.fullSwipe||0},'${(m.eligibleBanks||[]).join(', ')}')">Edit</button>
         <button class='del' onclick="deleteModel('${id}')">Delete</button>
-      </td>
-    </tr>`;
-    tbody.insertAdjacentHTML('beforeend', row);
+      </td></tr>`;
+    tbody.insertAdjacentHTML('beforeend',row);
   });
 }
-window.loadModels = loadModels;
+window.loadModels=loadModels;
 
-// Save model
-window.saveModel = async function(){
-  const name = m_name.value.trim();
-  const mop = Number(m_mop.value) || 0;
-  const dp = Number(m_dp.value) || 0;
-  const preGstDp = dp ? Number((dp/1.18).toFixed(2)) : 0;
-  const sellout = Number(m_sellout.value) || 0;
-  const sellin = Number(m_sellin.value) || 0;
+window.saveModel=async function(){
+  const name=m_name.value.trim();
+  const mop=Number(m_mop.value)||0;
+  const dp=Number(m_dp.value)||0;
+  const preGstDp=dp?Number((dp/1.18).toFixed(2)):0;
+  const sellout=Number(m_sellout.value)||0;
+  const sellin=Number(m_sellin.value)||0;
+  const noCostEmi=Number(m_noCostEmi.value)||0;
+  const fullSwipe=Number(m_fullSwipe.value)||0;
+  const eligibleBanks=(m_eligibleBanks.value.trim()?m_eligibleBanks.value.split(',').map(b=>b.trim()):[]);
 
-  const payload = { name, mop, dp, preGstDp, sellout, sellin, updatedAt: new Date() };
+  const payload={name,mop,dp,preGstDp,sellout,sellin,noCostEmi,fullSwipe,eligibleBanks,updatedAt:new Date()};
 
   if(editModelId){
     await updateDoc(doc(db,'mobileModels',editModelId),payload);
     alert('Model updated');
-  } else {
+  }else{
     await addDoc(collection(db,'mobileModels'),payload);
     alert('Model added');
   }
   clearModelForm(); loadModels();
 };
 
-window.startEditModel = function(id,name,mop,dp,sellout,sellin){
-  editModelId = id;
-  m_name.value = name; m_mop.value = mop; m_dp.value = dp;
-  m_sellout.value = sellout; m_sellin.value = sellin;
-  calcPreGst();
+window.startEditModel=function(id,name,mop,dp,sellout,sellin,noCostEmi,fullSwipe,banks){
+  editModelId=id;
+  m_name.value=name; m_mop.value=mop; m_dp.value=dp;
+  m_sellout.value=sellout; m_sellin.value=sellin;
+  m_noCostEmi.value=noCostEmi; m_fullSwipe.value=fullSwipe;
+  m_eligibleBanks.value=banks; calcPreGst();
 };
-window.deleteModel = async function(id){
-  if(confirm('Delete this model?')){
-    await deleteDoc(doc(db,'mobileModels',id));
-    loadModels();
-  }
+window.deleteModel=async function(id){
+  if(confirm('Delete this model?')){await deleteDoc(doc(db,'mobileModels',id));loadModels();}
 };
-window.clearModelForm = ()=>{editModelId=null;m_name.value='';m_mop.value='';m_dp.value='';m_sellout.value='';m_sellin.value='';m_preGst.value='';};
-window.calcPreGst = ()=>{const dp=Number(m_dp.value)||0;m_preGst.value=dp?(dp/1.18).toFixed(2):'';};
+window.clearModelForm=()=>{
+  editModelId=null;
+  [m_name,m_mop,m_dp,m_sellout,m_sellin,m_preGst,m_noCostEmi,m_fullSwipe,m_eligibleBanks].forEach(el=>el.value='');
+};
+window.calcPreGst=()=>{const dp=Number(m_dp.value)||0;m_preGst.value=dp?(dp/1.18).toFixed(2):'';};
 
 // ==================== USERS ====================
 async function loadUsers(){
@@ -169,41 +186,28 @@ async function loadUsers(){
   snap.forEach(docSnap=>{
     const u=docSnap.data();
     const id=docSnap.id;
-    const row=`<tr>
-      <td>${u.email}</td><td>${u.name}</td>
-      <td>
-        <button class='del' onclick="deleteUser('${id}')">Delete</button>
-      </td></tr>`;
+    const row=`<tr><td>${u.email}</td><td>${u.name}</td>
+      <td><button class='del' onclick="deleteUser('${id}')">Delete</button></td></tr>`;
     tbody.insertAdjacentHTML('beforeend',row);
   });
 }
 window.loadUsers=loadUsers;
 
 window.saveUser=async function(){
-  const name=u_name.value.trim();
-  const email=u_email.value.trim();
-  const pass=u_pass.value.trim();
+  const name=u_name.value.trim(),email=u_email.value.trim(),pass=u_pass.value.trim();
   if(!name||!email||!pass)return alert('Please fill all fields');
-
   try{
     const cred=await createUserWithEmailAndPassword(auth,email,pass);
     await addDoc(collection(db,'users'),{uid:cred.user.uid,name,email,createdAt:new Date()});
     alert('✅ User added successfully');
-    u_name.value='';u_email.value='';u_pass.value='';
-    loadUsers();
-  }catch(e){
-    alert('Error adding user: '+e.message);
-  }
+    u_name.value='';u_email.value='';u_pass.value='';loadUsers();
+  }catch(e){alert('Error adding user: '+e.message);}
 };
-
 window.deleteUser=async function(id){
-  if(confirm('Delete user from database only?')){
-    await deleteDoc(doc(db,'users',id));
-    loadUsers();
-  }
+  if(confirm('Delete user from database only?')){await deleteDoc(doc(db,'users',id));loadUsers();}
 };
 
-// ==================== Panel Control ====================
+// ==================== PANEL CONTROL ====================
 window.showPanel=function(id){
   document.getElementById('modelsPanel').style.display='none';
   document.getElementById('usersPanel').style.display='none';
@@ -213,7 +217,7 @@ window.showPanel=function(id){
 };
 window.adminLogout=function(){window.location.href='admin-login.html';};
 
-// initial load
+// Initial load
 loadModels();
 </script>
 </body>
