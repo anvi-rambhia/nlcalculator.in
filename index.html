@@ -1,81 +1,135 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Kore Mobiles — Models</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>KORE Mobiles — NLC Calculator</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyByEiFSbsDlrCtVJjZgvbCoYPt_io2CpTk",
-  authDomain: "nlcalulator.firebaseapp.com",
-  projectId: "nlcalulator",
-  storageBucket: "nlcalulator.firebasestorage.app",
-  messagingSenderId: "783940164431",
-  appId: "1:783940164431:web:edd9e24a8e6901942b433a",
-  measurementId: "G-D8CXJYMPG0"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-// 🔒 Redirect if not logged in
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    window.location.href = "user-login.html"; // Redirect back to login page
+<style>
+  :root{
+    --blue:#0b63d6;
+    --muted:#6b7280;
+    --bg:#f3f6f9;
+    --card:#ffffff;
+    --shadow: 0 6px 24px rgba(11,99,214,0.08);
+    --radius:14px;
   }
-});
-
-// Optional: Logout button handler
-window.logoutUser = function() {
-  signOut(auth).then(() => {
-    window.location.href = "user-login.html";
-  });
-};
-</script>
-
-  
-  <style>
-body{font-family:'Poppins',sans-serif;background:#f7f9fc;margin:0;color:#111}
-.wrap{max-width:980px;margin:18px auto;padding:14px}
-.header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-h2{color:#007bff;margin:0}
-.panel{background:#fff;border-radius:12px;padding:12px;box-shadow:0 12px 30px rgba(0,0,0,0.06)}
-.table{width:100%;border-collapse:collapse;margin-top:8px}
-.table th,.table td{padding:8px;border-bottom:1px solid #eee;text-align:left}
-.small{font-size:.9rem;color:#555}
-.btn{padding:8px 12px;border-radius:8px;border:none;cursor:pointer;background:#007bff;color:#fff}
-.input-small{padding:6px;border-radius:8px;border:1px solid #eee;width:80px}
-.note{font-size:.9rem;color:#666;margin-top:8px}
-@media(max-width:700px){.table td{font-size:.9rem}}
+  *{box-sizing:border-box}
+  body{font-family:'Poppins',sans-serif;margin:0;background:var(--bg);color:#111}
+  .header{
+    background:var(--card);
+    padding:14px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    box-shadow:var(--shadow);
+    position:sticky;
+    top:0;z-index:30;
+  }
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand h1{margin:0;color:var(--blue);font-size:1.15rem}
+  .user-actions{display:flex;align-items:center;gap:12px}
+  .user-email{color:var(--muted);font-size:0.95rem}
+  .btn{
+    background:none;border:2px solid var(--blue);color:var(--blue);
+    padding:8px 12px;border-radius:10px;font-weight:600;cursor:pointer;
+  }
+  .container{max-width:1150px;margin:22px auto;padding:0 18px}
+  /* Login card */
+  .login-wrap{display:flex;justify-content:center;align-items:center;height:70vh}
+  .login-card{width:380px;background:var(--card);padding:28px;border-radius:14px;box-shadow:var(--shadow);text-align:center}
+  .login-card h2{color:var(--blue);margin:0 0 12px 0;font-size:1.25rem}
+  .input{width:100%;padding:10px 12px;margin:9px 0;border-radius:10px;border:1px solid #ddd;font-size:0.98rem}
+  .primary{background:var(--blue);color:#fff;border:none}
+  .small-muted{color:var(--muted);font-size:0.9rem;margin-top:8px}
+  .error{color:#b91c1c;margin-top:8px;font-size:0.9rem}
+  /* Search */
+  .top-controls{display:flex;gap:12px;align-items:center;margin:18px 0}
+  .search{flex:1;padding:10px 12px;border-radius:10px;border:1px solid #e6e9ef}
+  /* Cards grid */
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+  .card{
+    background:var(--card);border-radius:12px;padding:14px;box-shadow:var(--shadow);
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .card h3{margin:0;color:var(--blue);font-size:1.05rem}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .kv{font-size:0.92rem;color:var(--muted)}
+  .pill{background:#f6fbff;border:1px solid #e6f0ff;padding:6px 10px;border-radius:999px;font-weight:600;color:var(--blue)}
+  .banks{font-size:0.9rem;color:#334155}
+  .calc-row{display:flex;gap:8px;align-items:center;margin-top:6px}
+  .pct-inp{width:110px;padding:8px;border-radius:10px;border:1px solid #e6e9ef}
+  .calc-btn{padding:8px 10px;border-radius:10px;border:none;background:var(--blue);color:#fff;cursor:pointer}
+  .result{font-weight:700;color:#111;margin-top:6px}
+  /* Offers / settings */
+  .settings{margin-top:20px;display:flex;gap:16px;flex-wrap:wrap}
+  .settings .s-card{flex:1;min-width:260px;padding:12px;border-radius:12px;background:var(--card);box-shadow:var(--shadow)}
+  .loading{padding:40px;text-align:center;color:var(--muted);font-weight:600}
+  @media(max-width:420px){
+    .pct-inp{width:100%}
+    .calc-row{flex-direction:column;align-items:stretch}
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
+
   <div class="header">
-    <h2>📱 Available Models</h2>
-    <a href="admin.html" style="text-decoration:none"><button class="btn">Admin</button></a>
+    <div class="brand">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="24" rx="6" fill="#0b63d6"/><path d="M7 15l5-6 5 6" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <h1>KORE Mobiles — NLC Calculator</h1>
+    </div>
+    <div class="user-actions" id="headerRight" style="visibility:hidden">
+      <div class="user-email" id="userEmail">you@company.com</div>
+      <button class="btn" id="logoutBtn">Logout</button>
+    </div>
   </div>
 
-  <div class="panel">
-    <p class="note">Enter percentage (for example: 10 for 10%). Final NLC = DP − (percentage × Pre-GST DP / 100)</p>
-    <table class="table" id="modelsTable">
-      <thead>
-        <tr><th>Model</th><th>DP</th><th>Pre-GST DP</th><th>Enter %</th><th>Final NLC (₹)</th></tr>
-      </thead>
-      <tbody id="modelsTbody"></tbody>
-    </table>
+  <div class="container">
+
+    <!-- LOGIN (visible when not signed in) -->
+    <div id="loginSection" class="login-wrap" style="display:none">
+      <div class="login-card">
+        <h2>🔐 User Login</h2>
+        <input id="loginEmail" class="input" type="email" placeholder="Email" />
+        <input id="loginPassword" class="input" type="password" placeholder="Password" />
+        <button id="loginBtn" class="input primary" style="cursor:pointer">Login</button>
+        <div id="loginError" class="error"></div>
+        <div class="small-muted">Login using credentials created by admin.</div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD (visible when signed in) -->
+    <div id="dashSection" style="display:none">
+      <div class="top-controls">
+        <input id="searchInput" class="search" placeholder="Search models by name, ram, rom..." />
+        <div style="min-width:140px;text-align:right;color:var(--muted)">Welcome, <span id="smallEmail"></span></div>
+      </div>
+
+      <div id="loadingText" class="loading">Loading...</div>
+
+      <div id="cardsGrid" class="cards" style="display:none"></div>
+
+      <div class="settings" id="settingsArea" style="display:none">
+        <div class="s-card">
+          <h4 style="margin:0 0 8px 0">Credit Card Offers</h4>
+          <div id="offersText" class="kv">—</div>
+        </div>
+        <div class="s-card">
+          <h4 style="margin:0 0 8px 0">Eligible Banks</h4>
+          <div id="banksText" class="kv">—</div>
+        </div>
+      </div>
+    </div>
+
   </div>
-</div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+// Firebase v10 (modular)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs, query, orderBy, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-/* your firebase config */
+/* ---------- CONFIG: use your nlcalulator project ---------- */
 const firebaseConfig = {
   apiKey: "AIzaSyByEiFSbsDlrCtVJjZgvbCoYPt_io2CpTk",
   authDomain: "nlcalulator.firebaseapp.com",
@@ -88,53 +142,236 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const modelCollection = "mobileModels";
+const auth = getAuth(app);
 
-function fmt(n){ if(n===undefined||n===null||n==='') return '0'; return Number(n).toLocaleString('en-IN'); }
+/* DOM */
+const loginSection = document.getElementById('loginSection');
+const dashSection = document.getElementById('dashSection');
+const loginBtn = document.getElementById('loginBtn');
+const loginError = document.getElementById('loginError');
+const loginEmail = document.getElementById('loginEmail');
+const loginPassword = document.getElementById('loginPassword');
+const headerRight = document.getElementById('headerRight');
+const userEmailText = document.getElementById('userEmail');
+const smallEmail = document.getElementById('smallEmail');
+const logoutBtn = document.getElementById('logoutBtn');
+const loadingText = document.getElementById('loadingText');
+const cardsGrid = document.getElementById('cardsGrid');
+const settingsArea = document.getElementById('settingsArea');
+const offersText = document.getElementById('offersText');
+const banksText = document.getElementById('banksText');
+const searchInput = document.getElementById('searchInput');
 
-window.loadModels = async function(){
-  const tbody = document.getElementById('modelsTbody');
-  tbody.innerHTML = '<tr><td colspan=5>Loading...</td></tr>';
+/* settings doc */
+const settingsCollection = 'settings';
+const settingsDocId = 'siteSettings'; // admin should edit settings/siteSettings
+
+/* model collection */
+const modelCollection = 'mobileModels';
+
+let modelsCache = []; // cached list of models
+
+/* helper: format INR */
+function fmtINR(n){
+  if(n===undefined||n===null||n===''||isNaN(Number(n))) return '0';
+  return Number(n).toLocaleString('en-IN', {maximumFractionDigits:2,minimumFractionDigits:2});
+}
+
+/* ---------- AUTH: show/hide sections ---------- */
+onAuthStateChanged(auth, user => {
+  if(user){
+    // Signed in
+    loginSection.style.display = 'none';
+    dashSection.style.display = 'block';
+    headerRight.style.visibility = 'visible';
+    userEmailText.textContent = user.email;
+    smallEmail.textContent = user.email;
+    // Load models and settings
+    loadAllData();
+  } else {
+    // Not signed in
+    headerRight.style.visibility = 'hidden';
+    userEmailText.textContent = '';
+    smallEmail.textContent = '';
+    // show login
+    loginSection.style.display = 'flex';
+    dashSection.style.display = 'none';
+  }
+});
+
+/* ---------- LOGIN handler ---------- */
+loginBtn.addEventListener('click', async ()=>{
+  loginError.textContent = '';
+  const email = loginEmail.value.trim();
+  const pass = loginPassword.value.trim();
+  if(!email || !pass){ loginError.textContent = 'Enter email and password'; return; }
+  loginBtn.disabled = true; loginBtn.textContent = 'Loading...';
   try {
+    await signInWithEmailAndPassword(auth, email, pass);
+    // onAuthStateChanged will load the dashboard
+  } catch(err){
+    console.error('login error', err);
+    loginError.textContent = 'Invalid email or password.';
+  } finally {
+    loginBtn.disabled = false; loginBtn.textContent = 'Login';
+  }
+});
+
+/* ---------- Logout ---------- */
+logoutBtn.addEventListener('click', async ()=>{
+  await signOut(auth);
+  // auth state change will revert UI to login
+});
+
+/* ---------- Load settings & models ---------- */
+async function loadAllData(){
+  // show loading
+  loadingText.style.display = 'block';
+  cardsGrid.style.display = 'none';
+  settingsArea.style.display = 'none';
+  cardsGrid.innerHTML = '';
+  offersText.textContent = '—';
+  banksText.textContent = '—';
+  modelsCache = [];
+
+  try {
+    // 1) settings doc
+    const settingsDocRef = doc(db, settingsCollection, settingsDocId);
+    const settingsSnap = await getDoc(settingsDocRef);
+    if(settingsSnap.exists()){
+      const s = settingsSnap.data();
+      offersText.textContent = s.creditCardOffers || '—';
+      banksText.textContent = s.eligibleBanks || '—';
+    } else {
+      offersText.textContent = 'Not configured by admin';
+      banksText.textContent = 'Not configured by admin';
+    }
+
+    // 2) models
     const q = query(collection(db, modelCollection), orderBy('name'));
     const snap = await getDocs(q);
-    tbody.innerHTML = '';
-    let count = 0;
-    snap.forEach(docSnap=>{
-      const m = docSnap.data();
-      const id = docSnap.id;
-      count++;
-      const pre = m.preGstDp || (m.dp ? (m.dp/1.18).toFixed(2) : 0);
-      tbody.innerHTML += `
-        <tr id="row-${id}">
-          <td><strong>${m.name||''}</strong><div class="small">${m.ram||''}/${m.rom||''}</div></td>
-          <td>₹${fmt(m.dp)}</td>
-          <td>₹${fmt(pre)}</td>
-          <td><input class="input-small" id="pct-${id}" placeholder="%" oninput="calcNLC('${id}', ${m.dp || 0}, ${pre})" /></td>
-          <td id="nlc-${id}">-</td>
-        </tr>
-      `;
+    snap.forEach(d=>{
+      const m = d.data();
+      m._id = d.id;
+      // normalize fields to ensure names we use exist
+      modelsCache.push({
+        id: d.id,
+        name: m.name || '',
+        mop: Number(m.mop) || 0,
+        dp: Number(m.dp) || 0,
+        preGstDp: (m.preGstDp || (m.dp ? Number((m.dp/1.18).toFixed(2)) : 0)),
+        sellout: Number(m.sellout) || 0,
+        sellin: Number(m.sellin) || 0,
+        noCostEmi: Number(m.noCostEmi || m.ccNo || 0),
+        fullSwipe: Number(m.fullSwipe || m.ccFull || 0),
+        eligibleBanks: Array.isArray(m.eligibleBanks) ? m.eligibleBanks : (typeof m.eligibleBanks === 'string' ? m.eligibleBanks.split(',').map(x=>x.trim()) : [])
+      });
     });
-    if(count===0) tbody.innerHTML = '<tr><td colspan=5>No models found</td></tr>';
+
+    renderCards(modelsCache);
   } catch(e){
-    console.error('loadModels error', e);
-    tbody.innerHTML = '<tr><td colspan=5>Error loading models — check console.</td></tr>';
+    console.error('loadAllData error', e);
+    loadingText.textContent = 'Error loading data — check console';
+  } finally {
+    loadingText.style.display = 'none';
+    cardsGrid.style.display = modelsCache.length ? 'grid' : 'none';
+    settingsArea.style.display = 'flex';
   }
-};
+}
 
-window.calcNLC = function(id, dp, preGst){
-  const inp = document.getElementById(`pct-${id}`);
-  if(!inp) return;
-  const pct = Number(inp.value) || 0;
-  // Final NLC = DP - (percentage * Pre-GST DP / 100)
-  const percentageValue = (Number(preGst) * (pct/100));
-  const finalNLC = Number(dp) - percentageValue;
-  document.getElementById(`nlc-${id}`).innerText = finalNLC>=0 ? `₹${fmt(finalNLC.toFixed(2))}` : `₹${fmt(finalNLC.toFixed(2))}`;
-};
+/* ---------- Render cards ---------- */
+function renderCards(list){
+  cardsGrid.innerHTML = '';
+  if(!list.length){
+    cardsGrid.innerHTML = '<div class="loading">No models found</div>';
+    return;
+  }
+  list.forEach(m => {
+    const isIphone = /iphone/i.test(m.name);
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3>${escapeHtml(m.name)}</h3>
+        <div class="pill">${escapeHtml(m.eligibleBanks && m.eligibleBanks[0] ? m.eligibleBanks[0] : '')}</div>
+      </div>
 
-// initial load
-loadModels();
+      <div class="row">
+        <div class="kv">MOP: ₹${fmtINR(m.mop)}</div>
+        <div class="kv">DP: ₹${fmtINR(m.dp)}</div>
+        <div class="kv">Pre-GST DP: ₹${fmtINR(m.preGstDp)}</div>
+      </div>
+
+      <div class="row">
+        <div class="kv">Sellout: ₹${fmtINR(m.sellout)}</div>
+        <div class="kv">Sellin: ₹${fmtINR(m.sellin)}</div>
+      </div>
+
+      <div class="row">
+        <div class="kv">No Cost EMI: ₹${fmtINR(m.noCostEmi)}</div>
+        <div class="kv">Full Swipe: ₹${fmtINR(m.fullSwipe)}</div>
+      </div>
+
+      <div class="row banks"><strong>Eligible Banks:</strong> ${(m.eligibleBanks||[]).join(', ') || '—'}</div>
+
+      <div style="height:6px"></div>
+
+      <div class="calc-row">
+        <input class="pct-inp" placeholder="Dealer % (e.g. 5)" id="pct-${m.id}" type="number" min="0" step="0.01"/>
+        <button class="calc-btn" id="btn-${m.id}">Calculate NLC</button>
+      </div>
+
+      <div class="result" id="res-${m.id}">Final NLC: —</div>
+    `;
+    cardsGrid.appendChild(card);
+
+    // handlers
+    const inp = card.querySelector(`#pct-${m.id}`);
+    const btn = card.querySelector(`#btn-${m.id}`);
+    const res = card.querySelector(`#res-${m.id}`);
+
+    // calculate function
+    function calcAndShow(){
+      const pct = Number(inp.value) || 0;
+      let finalNLC = 0;
+      if(isIphone){
+        finalNLC = Number(m.dp) - (Number(m.dp) * (pct/100));
+      } else {
+        finalNLC = Number(m.dp) - (Number(m.preGstDp) * (pct/100));
+      }
+      res.textContent = `Final NLC: ₹${fmtINR(finalNLC)}`;
+    }
+
+    // on click & on input
+    btn.addEventListener('click', calcAndShow);
+    inp.addEventListener('input', () => {
+      // live update but only when non-empty
+      if(inp.value.trim() !== '') calcAndShow();
+      else res.textContent = 'Final NLC: —';
+    });
+  });
+}
+
+/* ---------- Search ---------- */
+searchInput.addEventListener('input', ()=>{
+  const q = (searchInput.value || '').trim().toLowerCase();
+  if(!q) return renderCards(modelsCache);
+  const filtered = modelsCache.filter(m => {
+    return (m.name || '').toLowerCase().includes(q) ||
+           (m.eligibleBanks || []).join(' ').toLowerCase().includes(q);
+  });
+  renderCards(filtered);
+});
+
+/* ---------- small helper to prevent HTML injection in names ---------- */
+function escapeHtml(str){
+  if(!str) return '';
+  return String(str).replace(/[&<>"']/g, function(s){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[s]; });
+}
+
+/* ---------- auto-check on load (auth state handled above via onAuthStateChanged) ---------- */
+// nothing else needed here; onAuthStateChanged triggers loadAllData when signed in
+
 </script>
 </body>
 </html>
-
