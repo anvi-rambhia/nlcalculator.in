@@ -4,504 +4,514 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Kore Mobiles — Admin Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet"/>
 <style>
-:root{--blue:#007bff;--green:#28a745;--red:#dc3545;--bg:#f7f9fc}
-body{font-family:'Poppins',sans-serif;margin:0;background:var(--bg);color:#111}
-.wrap{max-width:980px;margin:18px auto;padding:14px}
-.header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-h2{color:var(--blue);margin:0;font-size:1.4rem}
-.btn{padding:10px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:600}
-.primary{background:var(--blue);color:#fff}
-.logout{background:var(--red);color:#fff}
-.layout{display:grid;grid-template-columns:1fr 420px;gap:14px}
-.panel{background:#fff;border-radius:12px;padding:12px;box-shadow:0 12px 30px rgba(0,0,0,0.06)}
-.form-row{display:flex;gap:10px;flex-wrap:wrap}
-.form-row .half{flex:1;min-width:140px}
-label{font-weight:600;font-size:.95rem;margin-top:6px;display:block}
-.small{font-size:.95rem;color:#444}
-.table{width:100%;border-collapse:collapse;margin-top:8px}
-.table th,.table td{padding:8px;border-bottom:1px solid #eee;text-align:left;font-size:.95rem;vertical-align:middle}
-.actions button{margin-right:6px;padding:6px 10px;border-radius:8px;border:none;cursor:pointer}
-.edit{background:#ffc107;color:#111}
-.del{background:#dc3545;color:#fff}
-.add{background:var(--green);color:#fff}
-.user-list{max-height:220px;overflow:auto;margin-top:8px}
-.note{font-size:.9rem;color:#666;margin-top:8px}
-.search-row{display:flex;gap:8px;margin-bottom:12px;align-items:center}
-.kv{font-size:0.95rem;color:#333}
-.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef3ff;color:#0451b3;font-weight:600;margin-left:6px}
-.user-card{background:#fbfbfd;border-radius:8px;padding:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
-.user-actions button{margin-left:6px;padding:6px 10px;border-radius:6px;border:none;cursor:pointer}
-.user-actions .u-edit{background:#28a745;color:#fff}
-.user-actions .u-del{background:#dc3545;color:#fff}
-@media(max-width:900px){.layout{grid-template-columns:1fr}}
+  :root{
+    --bg:#f6f8fb;
+    --card:#ffffff;
+    --accent:#0b76ff;
+    --accent-2:#1fa65a;
+    --danger:#ef4444;
+    --muted:#6b7280;
+    --shadow: 0 8px 28px rgba(12, 20, 40, 0.06);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: 'Poppins', sans-serif;
+    background:linear-gradient(180deg,#f6f8fb 0%, #ffffff 100%);
+    color:#0f172a;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:28px auto;padding:20px}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+  h1{margin:0;font-size:1.4rem;color:var(--accent);font-weight:700}
+  .top-actions{display:flex;gap:8px;align-items:center}
+  .btn{padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:600}
+  .btn-primary{background:var(--accent);color:#fff;box-shadow:var(--shadow)}
+  .btn-ghost{background:transparent;border:1px solid #e6eefb;color:var(--accent)}
+  .btn-danger{background:var(--danger);color:#fff}
+  .layout{display:grid;grid-template-columns:1fr 420px;gap:18px}
+  @media(max-width:980px){ .layout{grid-template-columns:1fr} .wrap{padding:12px} }
+
+  /* left panel */
+  .panel{background:var(--card);border-radius:14px;padding:18px;box-shadow:var(--shadow)}
+  .controls{display:flex;gap:12px;margin-bottom:12px}
+  .search-input{flex:1;padding:10px;border-radius:10px;border:1px solid #e6eefb}
+  .table{width:100%;border-collapse:collapse;margin-top:10px}
+  .table th,.table td{padding:10px;border-bottom:1px solid #f1f5f9;text-align:left;font-size:0.95rem;vertical-align:middle}
+  .table th{color:var(--muted);font-weight:600}
+  .small{font-size:0.9rem;color:var(--muted)}
+  .card-title{font-weight:700;color:#0b1730;margin-bottom:8px}
+
+  /* right panel form */
+  .form-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+  .form-row .half{flex:1;min-width:140px}
+  input[type="text"], input[type="number"], textarea, select{
+    width:100%;padding:12px;border-radius:10px;border:1px solid #e6eefb;font-size:0.98rem;
+  }
+  label{display:block;font-weight:600;font-size:0.95rem;margin-top:10px;color:#0b1730}
+  .muted{color:var(--muted);font-size:0.9rem;margin-top:8px}
+  .actions{display:flex;gap:8px;margin-top:12px}
+  .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#f1f8ff;color:var(--accent);font-weight:600;font-size:0.85rem}
+
+  /* users list */
+  .user-item{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;border:1px solid #f1f5f9;margin-bottom:8px}
+  .user-item .meta{font-weight:600}
+  .kv{font-size:0.95rem;color:#0b1730}
+
+  /* small responsive tweaks */
+  @media (max-width:520px){
+    .btn{padding:8px 10px;font-size:0.9rem}
+    .table th,.table td{padding:8px;font-size:0.9rem}
+  }
 </style>
 </head>
 <body>
-
-<div class="wrap">
-  <div class="header">
-    <h2>⚙️ Admin Dashboard</h2>
-    <div style="display:flex;gap:8px">
-      <button class="btn primary" onclick="openUserPanel()">Open User Panel</button>
-      <button class="btn logout" onclick="adminLogout()">Logout</button>
+  <div class="wrap">
+    <div class="topbar">
+      <h1>Kore Mobiles — Admin</h1>
+      <div class="top-actions">
+        <button class="btn btn-ghost" onclick="openUserPanel()">Open User Panel</button>
+        <button class="btn btn-primary" onclick="loadModels()">Refresh</button>
+        <button class="btn btn-danger" onclick="signOutAdmin()">Sign out</button>
+      </div>
     </div>
-  </div>
 
-  <div class="layout">
-    <!-- Left: Models list -->
-    <div class="panel">
-      <h3 style="margin-top:0">Models</h3>
+    <div class="layout">
+      <!-- LEFT: MODELS LIST -->
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div class="card-title">Mobile Models</div>
+            <div class="small">Add, edit or delete mobile models. Data lives in <code>mobileModels</code> collection.</div>
+          </div>
+          <div class="pill" id="adminEmailPill">—</div>
+        </div>
 
-      <div class="search-row">
-        <input id="filterInput" placeholder="Filter by name / ram / rom" style="flex:1;padding:10px;border-radius:8px;border:1px solid #eee" oninput="loadModels()" />
-        <button class="btn" onclick="loadModels()">Refresh</button>
-        <button class="btn" onclick="exportModels()">Export JSON</button>
+        <div class="controls" style="margin-top:14px">
+          <input id="filterInput" class="search-input" placeholder="Filter by name / ram / rom" oninput="loadModels()" />
+          <button class="btn" onclick="exportModels()">Export</button>
+        </div>
+
+        <div style="overflow:auto;max-height:56vh">
+          <table class="table" id="modelsTable">
+            <thead><tr>
+              <th>Model</th><th>MOP</th><th>DP</th><th>Pre-GST DP</th><th>Sellout</th><th>Sellin</th><th>CC Offers</th><th>Banks</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="modelsTbody"></tbody>
+          </table>
+        </div>
       </div>
 
-      <table class="table">
-        <thead><tr><th>Model</th><th>MOP</th><th>DP</th><th>Pre-GST DP</th><th>Sellout</th><th>Sellin</th><th>CC Offers</th><th>Banks</th><th>Actions</th></tr></thead>
-        <tbody id="modelsTbody"></tbody>
-      </table>
-      <p class="note">Data is saved to Firestore collection <code>mobileModels</code>. Use Export to download current data as JSON.</p>
-    </div>
+      <!-- RIGHT: FORM (models + users) -->
+      <div class="panel">
+        <div class="card-title">Add / Edit Model</div>
 
-    <!-- Right: Add / Edit Model + Users -->
-    <div class="panel">
-      <h3 style="margin-top:0">Add / Edit Model</h3>
-
-      <div>
         <label>Model Name</label>
-        <input id="m_name" placeholder="e.g. Galaxy S24" />
+        <input id="m_name" placeholder="e.g. Samsung S24" />
+
+        <div class="form-row">
+          <div class="half">
+            <label>MOP (₹)</label>
+            <input id="m_mop" type="number" />
+          </div>
+          <div class="half">
+            <label>DP (₹)</label>
+            <input id="m_dp" type="number" oninput="calcPreGst()" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="half">
+            <label>Pre-GST DP (auto)</label>
+            <input id="m_preGst" readonly />
+          </div>
+          <div class="half">
+            <label>Sellout Scheme (₹)</label>
+            <input id="m_sellout" type="number" />
+          </div>
+        </div>
+
+        <label>Sellin / Purchase Scheme (₹)</label>
+        <input id="m_sellin" type="number" />
+
+        <div class="form-row">
+          <div class="half">
+            <label>RAM</label>
+            <input id="m_ram" placeholder="e.g. 8GB" />
+          </div>
+          <div class="half">
+            <label>ROM</label>
+            <input id="m_rom" placeholder="e.g. 128GB" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="half">
+            <label>No Cost EMI (₹)</label>
+            <input id="m_cc_no" type="number" />
+          </div>
+          <div class="half">
+            <label>Full Swipe (₹)</label>
+            <input id="m_cc_full" type="number" />
+          </div>
+        </div>
+
+        <label>Eligible Banks (comma separated)</label>
+        <input id="m_banks" placeholder="e.g. HDFC, SBI, ICICI" />
+
+        <div class="actions">
+          <button class="btn btn-primary" onclick="saveModel()">Save Model</button>
+          <button class="btn" onclick="clearForm()">Clear</button>
+        </div>
+
+        <hr style="margin:14px 0"/>
+
+        <div class="card-title">Manage Users</div>
+        <div class="small">Add / edit / delete users for admin testing (stored in Firestore 'users'). For production create Auth accounts.</div>
+
+        <label>Name</label>
+        <input id="u_name" placeholder="User name (optional)" />
+
+        <label>Email</label>
+        <input id="u_email" placeholder="email@example.com" />
+
+        <label>Password</label>
+        <input id="u_pass" type="password" placeholder="password (for testing only)" />
+
+        <label>Role</label>
+        <select id="u_role">
+          <option value="user">user</option>
+          <option value="admin">admin</option>
+        </select>
+
+        <div class="actions" style="margin-bottom:8px">
+          <button class="btn btn-primary" onclick="addUser()">Add User</button>
+          <button class="btn" onclick="loadUsers()">Show Users</button>
+        </div>
+
+        <div id="usersList"></div>
+        <p class="muted">Note: This page stores user records in Firestore collection <code>users</code>. Admin authentication happens via Firebase Auth.</p>
       </div>
-
-      <div class="form-row">
-        <div class="half">
-          <label>MOP (₹)</label>
-          <input id="m_mop" type="number" />
-        </div>
-        <div class="half">
-          <label>DP (₹)</label>
-          <input id="m_dp" type="number" oninput="calcPreGst()" />
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="half">
-          <label>Pre-GST DP (auto)</label>
-          <input id="m_preGst" readonly />
-        </div>
-        <div class="half">
-          <label>Sellout Scheme (₹)</label>
-          <input id="m_sellout" type="number" />
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="half">
-          <label>Sellin / Purchase Scheme (₹)</label>
-          <input id="m_sellin" type="number" />
-        </div>
-        <div class="half">
-          <label>RAM</label>
-          <input id="m_ram" placeholder="e.g. 8GB" />
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="half">
-          <label>ROM</label>
-          <input id="m_rom" placeholder="e.g. 128GB" />
-        </div>
-        <div class="half">
-          <label>Credit Card No Cost EMI (₹)</label>
-          <input id="m_cc_no" type="number" />
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="half">
-          <label>Credit Card Full Swipe (₹)</label>
-          <input id="m_cc_full" type="number" />
-        </div>
-        <div class="half">
-          <label>Eligible Banks (comma separated)</label>
-          <input id="m_banks" placeholder="e.g. HDFC, SBI, ICICI" />
-        </div>
-      </div>
-
-      <div style="display:flex;gap:8px;margin-top:12px">
-        <button class="btn add" onclick="saveModel()">Save Model</button>
-        <button class="btn" onclick="clearForm()">Clear</button>
-      </div>
-
-      <hr style="margin:12px 0"/>
-
-      <!-- Users admin -->
-      <h3 style="margin-top:0">Users</h3>
-      <label>Email</label>
-      <input id="u_email" placeholder="email@example.com" />
-      <label>Password</label>
-      <input id="u_pass" type="password" placeholder="password (store only for testing)" />
-      <label>Role</label>
-      <select id="u_role">
-        <option value="user">User</option>
-        <option value="admin">Admin</option>
-      </select>
-
-      <div style="display:flex;gap:8px;margin-top:10px">
-        <button class="btn primary" onclick="addUser()">Add User</button>
-        <button class="btn" onclick="loadUsers()">Show Users</button>
-      </div>
-
-      <div style="margin-top:10px" id="usersList"></div>
-      <p class="note">Users are stored in Firestore collection <code>users</code>. This is for admin convenience and testing only. For production, use Firebase Authentication (recommended).</p>
     </div>
   </div>
-</div>
 
-<script type="module">
-/* Firebase imports */
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  getDocs,
-  doc,
-  updateDoc,
-  deleteDoc,
-  query,
-  orderBy,
-  getDoc
-} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
-
-/* Firebase config (your project nlcalulator) */
-const firebaseConfig = {
-  apiKey: "AIzaSyByEiFSbsDlrCtVJjZgvbCoYPt_io2CpTk",
-  authDomain: "nlcalulator.firebaseapp.com",
-  projectId: "nlcalulator",
-  storageBucket: "nlcalulator.firebasestorage.app",
-  messagingSenderId: "783940164431",
-  appId: "1:783940164431:web:edd9e24a8e6901942b433a",
-  measurementId: "G-D8CXJYMPG0"
-};
-
-/* Initialize Firestore */
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const collectionName = "mobileModels";
-const usersCollection = "users";
-
-let editId = null;
-
-/* Utility: format number */
-function fmt(n){ if(n===undefined||n===null||n==='') return 0; return Number(n).toLocaleString('en-IN'); }
-
-/* ---------------- Models: Save / Load / Edit / Delete ---------------- */
-window.saveModel = async function(){
-  const name = document.getElementById('m_name').value.trim();
-  if(!name) return alert('Enter model name');
-
-  const mop = Number(document.getElementById('m_mop').value) || 0;
-  const dp = Number(document.getElementById('m_dp').value) || 0;
-  const preGstDp = dp ? Number((dp/1.18).toFixed(2)) : 0;
-  const sellout = Number(document.getElementById('m_sellout').value) || 0;
-  const sellin = Number(document.getElementById('m_sellin').value) || 0;
-  const ram = document.getElementById('m_ram').value.trim() || '';
-  const rom = document.getElementById('m_rom').value.trim() || '';
-  const ccNo = Number(document.getElementById('m_cc_no').value) || 0;
-  const ccFull = Number(document.getElementById('m_cc_full').value) || 0;
-  const banksText = document.getElementById('m_banks').value.trim() || '';
-  const eligibleBanks = banksText ? banksText.split(',').map(b=>b.trim()).filter(Boolean) : [];
-
-  const payload = {
-    name, mop, dp, preGstDp, sellout, sellin, ram, rom, ccNo, ccFull, eligibleBanks, updatedAt: new Date()
-  };
-
-  try {
-    if(editId){
-      const ref = doc(db, collectionName, editId);
-      await updateDoc(ref, payload);
-      alert('✅ Model updated successfully');
-      editId = null;
-    } else {
-      const docRef = await addDoc(collection(db, collectionName), payload);
-      alert('✅ Model added successfully (id: '+docRef.id+')');
-    }
-    clearForm();
-    loadModels();
-  } catch(err){
-    console.error('Save error', err);
-    alert('❌ Error saving model — check console');
-  }
-};
-
-window.loadModels = async function(){
-  const tbody = document.getElementById('modelsTbody');
-  tbody.innerHTML = `<tr><td colspan="9">Loading...</td></tr>`;
-
-  const qText = (document.getElementById('filterInput').value || '').trim().toLowerCase();
-  try {
-    const q = query(collection(db, collectionName), orderBy('name'));
-    const snap = await getDocs(q);
-
-    tbody.innerHTML = '';
-    let count = 0;
-    snap.forEach(docSnap=>{
-      const m = docSnap.data();
-      const id = docSnap.id;
-
-      if(qText){
-        const hay = `${m.name||''} ${m.ram||''} ${m.rom||''}`.toLowerCase();
-        if(!hay.includes(qText)) return;
-      }
-
-      count++;
-      const tr = document.createElement('tr');
-      const banks = (m.eligibleBanks && m.eligibleBanks.length) ? m.eligibleBanks.join(', ') : '';
-      tr.innerHTML = `
-        <td><strong>${m.name||''}</strong><div class="small">${m.ram||''}/${m.rom||''}</div></td>
-        <td>₹${fmt(m.mop)}</td>
-        <td>₹${fmt(m.dp)}</td>
-        <td>₹${fmt(m.preGstDp)}</td>
-        <td>₹${fmt(m.sellout)}</td>
-        <td>₹${fmt(m.sellin)}</td>
-        <td class="kv">No Cost: ₹${fmt(m.ccNo)}<br>Full Swipe: ₹${fmt(m.ccFull)}</td>
-        <td class="kv">${banks}</td>
-        <td class="actions">
-          <button class="edit" onclick="startEdit('${id}')">Edit</button>
-          <button class="del" onclick="deleteModel('${id}')">Delete</button>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
-
-    if(count===0){
-      tbody.innerHTML = `<tr><td colspan="9">No models found.</td></tr>`;
-    }
-  } catch(err){
-    console.error('Load error', err);
-    tbody.innerHTML = `<tr><td colspan="9">Error loading models — check console.</td></tr>`;
-  }
-};
-
-window.startEdit = async function(id){
-  try {
-    const docRef = doc(db, collectionName, id);
-    const docSnap = await getDoc(docRef);
-    if(!docSnap.exists()){
-      alert('Document not found');
-      return;
-    }
-    const m = docSnap.data();
-    editId = id;
-    document.getElementById('m_name').value = m.name || '';
-    document.getElementById('m_mop').value = m.mop || '';
-    document.getElementById('m_dp').value = m.dp || '';
-    document.getElementById('m_preGst').value = m.preGstDp || '';
-    document.getElementById('m_sellout').value = m.sellout || '';
-    document.getElementById('m_sellin').value = m.sellin || '';
-    document.getElementById('m_ram').value = m.ram || '';
-    document.getElementById('m_rom').value = m.rom || '';
-    document.getElementById('m_cc_no').value = m.ccNo || '';
-    document.getElementById('m_cc_full').value = m.ccFull || '';
-    document.getElementById('m_banks').value = (m.eligibleBanks && m.eligibleBanks.join(', ')) || '';
-    window.scrollTo({top:0,behavior:'smooth'});
-  } catch(err){
-    console.error('Edit fetch error', err);
-    alert('Error loading model for edit');
-  }
-};
-
-window.deleteModel = async function(id){
-  if(!confirm('Delete this model?')) return;
-  try {
-    await deleteDoc(doc(db, collectionName, id));
-    alert('Model deleted');
-    loadModels();
-  } catch(err){
-    console.error('Delete error', err);
-    alert('Error deleting model');
-  }
-};
-
-window.clearForm = function(){
-  editId = null;
-  ['m_name','m_mop','m_dp','m_preGst','m_sellout','m_sellin','m_ram','m_rom','m_cc_no','m_cc_full','m_banks'].forEach(id=>document.getElementById(id).value='');
-};
-
-/* ---------------- Users: Add / Edit Password / Delete / Load ---------------- */
-
-/**
- * NOTE (important):
- * - This implementation stores user email & password in Firestore collection 'users' for admin convenience/test only.
- * - This is NOT secure for production. For production use Firebase Authentication + server-side Admin SDK / Cloud Function to manage accounts.
- */
-
-async function renderUsersList(){
-  const container = document.getElementById('usersList');
-  container.innerHTML = '<div class="user-card">Loading users...</div>';
-  try {
-    const q = query(collection(db, usersCollection), orderBy('email'));
-    const snap = await getDocs(q);
-    container.innerHTML = '';
-    let found = 0;
-    snap.forEach(d=>{
-      found++;
-      const u = d.data();
-      const div = document.createElement('div');
-      div.className = 'user-card';
-      div.innerHTML = `
-        <div>
-          <div><strong>${u.email}</strong> <span class="small">(${u.role||'user'})</span></div>
-        </div>
-        <div class="user-actions">
-          <button class="u-edit" onclick="startUserEdit('${d.id}')">Edit</button>
-          <button class="u-del" onclick="deleteUser('${d.id}')">Delete</button>
-        </div>
-      `;
-      container.appendChild(div);
-    });
-    if(found===0) container.innerHTML = '<div class="user-card">No users found.</div>';
-  } catch(err){
-    console.error('Users load error', err);
-    container.innerHTML = '<div class="user-card">Error loading users (see console)</div>';
-  }
-}
-window.loadUsers = renderUsersList;
-
-/* Add user (saves to Firestore 'users' collection) */
-window.addUser = async function(){
-  const email = document.getElementById('u_email').value.trim().toLowerCase();
-  const pass = document.getElementById('u_pass').value;
-  const role = document.getElementById('u_role').value;
-
-  if(!email || !pass) return alert('Enter email and password');
-
-  try {
-    // Check duplicate by email
-    const snap = await getDocs(collection(db, usersCollection));
-    let exists = false;
-    snap.forEach(d=>{
-      if((d.data().email||'').toLowerCase() === email) exists = true;
-    });
-    if(exists) return alert('User already exists with this email');
-
-    await addDoc(collection(db, usersCollection), {
-      email, password: pass, role, createdAt: new Date()
-    });
-    alert('User added');
-    document.getElementById('u_email').value='';
-    document.getElementById('u_pass').value='';
-    renderUsersList();
-  } catch(err){
-    console.error('Add user error', err);
-    alert('Error adding user — check console');
-  }
-};
-
-/* Start edit user: show prompt to update password / role */
-window.startUserEdit = async function(docId){
-  try {
-    const docRef = doc(db, usersCollection, docId);
-    const snap = await getDoc(docRef);
-    if(!snap.exists()) return alert('User not found');
-
-    const u = snap.data();
-    const newPass = prompt('Enter new password for ' + u.email + ' (leave blank to keep current):');
-    const newRole = prompt('Enter role for ' + u.email + ' (user/admin). Current: ' + (u.role||'user'), u.role||'user');
-    const updatePayload = {};
-    if(newPass && newPass.trim() !== '') updatePayload.password = newPass.trim();
-    if(newRole && newRole.trim() !== '') updatePayload.role = newRole.trim();
-
-    if(Object.keys(updatePayload).length === 0) return alert('Nothing to update');
-
-    await updateDoc(docRef, Object.assign(updatePayload, { updatedAt: new Date() }));
-    alert('User updated');
-    renderUsersList();
-  } catch(err){
-    console.error('User edit error', err);
-    alert('Error updating user');
-  }
-};
-
-/* Delete user */
-window.deleteUser = async function(docId){
-  if(!confirm('Delete this user?')) return;
-  try {
-    await deleteDoc(doc(db, usersCollection, docId));
-    alert('User deleted');
-    renderUsersList();
-  } catch(err){
-    console.error('Delete user error', err);
-    alert('Error deleting user');
-  }
-};
-
-/* ---------------- misc helpers ---------------- */
-window.calcPreGst = function(){
-  const dp = Number(document.getElementById('m_dp').value) || 0;
-  document.getElementById('m_preGst').value = dp ? (dp/1.18).toFixed(2) : '';
-};
-
-window.openUserPanel = function(){ window.location.href='index.html'; };
-window.adminLogout = function(){ window.location.href='admin-login.html'; };
-
-window.exportModels = async function(){
-  try {
-    const snap = await getDocs(collection(db, collectionName));
-    const arr = [];
-    snap.forEach(d => { arr.push(Object.assign({ id: d.id }, d.data())); });
-    const blob = new Blob([JSON.stringify(arr, null, 2)], {type:'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'mobileModels-export.json'; a.click();
-    URL.revokeObjectURL(url);
-    alert('Exported '+arr.length+' records');
-  } catch(err){
-    console.error('Export error', err);
-    alert('Error exporting models');
-  }
-};
-
-/* initial load */
-loadModels();
-renderUsersList();
-
-</script>
+  <!-- Firebase + Logic -->
   <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-  import { getFirestore } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
-  import { getAuth } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+    // Firebase imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+    import {
+      getFirestore, collection, addDoc, getDocs, doc, getDoc,
+      updateDoc, deleteDoc, query, orderBy
+    } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyByEiFSbsDlrCtVJjZgvbCoYPt_io2CpTk",
-    authDomain: "nlcalulator.firebaseapp.com",
-    projectId: "nlcalulator",
-    storageBucket: "nlcalulator.firebasestorage.app",
-    messagingSenderId: "783940164431",
-    appId: "1:783940164431:web:edd9e24a8e6901942b433a",
-    measurementId: "G-D8CXJYMPG0"
-  };
+    // --- CONFIG: replace with your project's config if needed
+    const firebaseConfig = {
+      apiKey: "AIzaSyByEiFSbsDlrCtVJjZgvbCoYPt_io2CpTk",
+      authDomain: "nlcalulator.firebaseapp.com",
+      projectId: "nlcalulator",
+      storageBucket: "nlcalulator.firebasestorage.app",
+      messagingSenderId: "783940164431",
+      appId: "1:783940164431:web:edd9e24a8e6901942b433a",
+      measurementId: "G-D8CXJYMPG0"
+    };
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  window.db = getFirestore(app);
-  window.auth = getAuth(app);
+    // Initialize
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+    // Collections
+    const MODELS_COL = "mobileModels";
+    const USERS_COL = "users";
+    const ADMINS_COL = "admins";
 
-onAuthStateChanged(auth, (user) => {
-  if (!user || localStorage.getItem("isAdmin") !== "true") {
-    alert("Unauthorized access!");
-    window.location.href = "login.html";
-  }
-})
-</script>
+    // state
+    let editingModelId = null;
+    const adminEmailPill = document.getElementById('adminEmailPill');
 
+    // ------------- Admin check -------------
+    onAuthStateChanged(auth, async (user) => {
+      if(!user){
+        // Not signed in -> redirect to admin-login.html
+        window.location.href = "admin-login.html";
+        return;
+      }
+      // display admin email
+      adminEmailPill.textContent = user.email || user.uid;
+
+      // Verify admin role:
+      try {
+        // First attempt: check admins/{uid}
+        const admDocRef = doc(db, ADMINS_COL, user.uid);
+        const admSnap = await getDoc(admDocRef);
+
+        if(admSnap.exists() && admSnap.data().role === 'admin'){
+          // ok admin
+          loadModels();
+          loadUsers();
+          return;
+        }
+
+        // fallback: query admins collection for the email field
+        const adminQuerySnap = await getDocs(query(collection(db, ADMINS_COL), orderBy("email")));
+        let found = false;
+        adminQuerySnap.forEach(d => {
+          const data = d.data();
+          if(data.email && data.email.toLowerCase() === (user.email||"").toLowerCase() && data.role === 'admin') found = true;
+        });
+
+        if(!found){
+          alert("Access denied: you are not listed as admin in Firestore 'admins' collection.");
+          await signOut(auth);
+          window.location.href = "admin-login.html";
+          return;
+        }
+
+        // ok
+        loadModels();
+        loadUsers();
+      } catch(err){
+        console.error("Admin verification error", err);
+        alert("Admin verification error — check console.");
+      }
+    });
+
+    // ------------- Models -------------
+    window.loadModels = async function(){
+      const tbody = document.getElementById('modelsTbody');
+      tbody.innerHTML = '<tr><td colspan="9">Loading…</td></tr>';
+      try{
+        const q = query(collection(db, MODELS_COL), orderBy("name"));
+        const snap = await getDocs(q);
+        const filter = (document.getElementById('filterInput').value || '').trim().toLowerCase();
+        tbody.innerHTML = '';
+        let any = false;
+        snap.forEach(s=>{
+          const m = s.data();
+          const id = s.id;
+          const hay = `${m.name||''} ${m.ram||''} ${m.rom||''}`.toLowerCase();
+          if(filter && !hay.includes(filter)) return;
+          any = true;
+          const banks = Array.isArray(m.eligibleBanks) ? m.eligibleBanks.join(', ') : (m.eligibleBanks || '');
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td><strong>${m.name||''}</strong><div class="small">${m.ram||''}/${m.rom||''}</div></td>
+            <td>₹${formatNumber(m.mop)}</td>
+            <td>₹${formatNumber(m.dp)}</td>
+            <td>₹${formatNumber(m.preGstDp)}</td>
+            <td>₹${formatNumber(m.sellout)}</td>
+            <td>₹${formatNumber(m.sellin)}</td>
+            <td class="kv">NoCost: ₹${formatNumber(m.ccNo)}<br>Full: ₹${formatNumber(m.ccFull)}</td>
+            <td class="kv">${banks}</td>
+            <td class="actions">
+              <button class="edit" onclick="startEditModel('${id}')">Edit</button>
+              <button class="del" onclick="deleteModel('${id}')">Delete</button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+        if(!any) tbody.innerHTML = '<tr><td colspan="9">No models found.</td></tr>';
+      } catch(err){
+        console.error(err);
+        tbody.innerHTML = '<tr><td colspan="9">Error loading models (see console)</td></tr>';
+      }
+    };
+
+    window.startEditModel = async function(id){
+      try{
+        const d = await getDoc(doc(db, MODELS_COL, id));
+        if(!d.exists()) return alert("Model not found");
+        const m = d.data();
+        editingModelId = id;
+        document.getElementById('m_name').value = m.name || '';
+        document.getElementById('m_mop').value = m.mop || '';
+        document.getElementById('m_dp').value = m.dp || '';
+        document.getElementById('m_preGst').value = m.preGstDp || '';
+        document.getElementById('m_sellout').value = m.sellout || '';
+        document.getElementById('m_sellin').value = m.sellin || '';
+        document.getElementById('m_ram').value = m.ram || '';
+        document.getElementById('m_rom').value = m.rom || '';
+        document.getElementById('m_cc_no').value = m.ccNo || '';
+        document.getElementById('m_cc_full').value = m.ccFull || '';
+        document.getElementById('m_banks').value = (Array.isArray(m.eligibleBanks) ? m.eligibleBanks.join(', ') : (m.eligibleBanks||'')) || '';
+        window.scrollTo({top:0,behavior:'smooth'});
+      } catch(err){ console.error(err); alert('Error loading model'); }
+    };
+
+    window.saveModel = async function(){
+      const name = document.getElementById('m_name').value.trim();
+      if(!name) return alert('Enter model name');
+      const mop = Number(document.getElementById('m_mop').value) || 0;
+      const dp = Number(document.getElementById('m_dp').value) || 0;
+      const preGstDp = dp ? Number((dp / 1.18).toFixed(2)) : 0;
+      const sellout = Number(document.getElementById('m_sellout').value) || 0;
+      const sellin = Number(document.getElementById('m_sellin').value) || 0;
+      const ram = document.getElementById('m_ram').value.trim() || '';
+      const rom = document.getElementById('m_rom').value.trim() || '';
+      const ccNo = Number(document.getElementById('m_cc_no').value) || 0;
+      const ccFull = Number(document.getElementById('m_cc_full').value) || 0;
+      const banksText = document.getElementById('m_banks').value.trim() || '';
+      const eligibleBanks = banksText ? banksText.split(',').map(b=>b.trim()).filter(Boolean) : [];
+
+      const payload = {
+        name, mop, dp, preGstDp, sellout, sellin, ram, rom,
+        ccNo, ccFull, eligibleBanks,
+        updatedAt: new Date()
+      };
+
+      try{
+        if(editingModelId){
+          await updateDoc(doc(db, MODELS_COL, editingModelId), payload);
+          editingModelId = null;
+          alert('Model updated');
+        } else {
+          await addDoc(collection(db, MODELS_COL), payload);
+          alert('Model added');
+        }
+        clearForm();
+        loadModels();
+      } catch(err){
+        console.error(err);
+        alert('Error saving model (see console)');
+      }
+    };
+
+    window.deleteModel = async function(id){
+      if(!confirm('Delete model?')) return;
+      try{
+        await deleteDoc(doc(db, MODELS_COL, id));
+        alert('Deleted');
+        loadModels();
+      } catch(err){ console.error(err); alert('Error deleting model'); }
+    };
+
+    window.calcPreGst = function(){
+      const dp = Number(document.getElementById('m_dp').value) || 0;
+      document.getElementById('m_preGst').value = dp ? (dp / 1.18).toFixed(2) : '';
+    };
+
+    window.clearForm = function(){
+      editingModelId = null;
+      ['m_name','m_mop','m_dp','m_preGst','m_sellout','m_sellin','m_ram','m_rom','m_cc_no','m_cc_full','m_banks'].forEach(id=>document.getElementById(id).value='');
+    };
+
+    // ------------- Users (Firestore-managed list) -------------
+    window.loadUsers = async function(){
+      const container = document.getElementById('usersList');
+      container.innerHTML = 'Loading users...';
+      try{
+        const q = query(collection(db, USERS_COL), orderBy('email'));
+        const snap = await getDocs(q);
+        container.innerHTML = '';
+        let any = false;
+        snap.forEach(d=>{
+          any = true;
+          const u = d.data(); const id = d.id;
+          const div = document.createElement('div');
+          div.className = 'user-item';
+          div.innerHTML = `<div><div class="meta">${u.name||u.email}</div><div class="small">${u.email} • ${u.role||'user'}</div></div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="btn" onclick="startUserEdit('${id}')">Edit</button>
+              <button class="btn btn-danger" onclick="deleteUser('${id}')">Delete</button>
+            </div>`;
+          container.appendChild(div);
+        });
+        if(!any) container.innerHTML = 'No users found.';
+      } catch(err){ console.error(err); container.innerHTML = 'Error loading users'; }
+    };
+
+    window.addUser = async function(){
+      const name = document.getElementById('u_name').value.trim();
+      const email = (document.getElementById('u_email').value || '').trim().toLowerCase();
+      const pass = document.getElementById('u_pass').value || '';
+      const role = document.getElementById('u_role').value || 'user';
+      if(!email || !pass) return alert('Enter email and password');
+
+      try{
+        // check duplicate in Firestore
+        const snap = await getDocs(collection(db, USERS_COL));
+        let exists = false;
+        snap.forEach(d => { if((d.data().email||'').toLowerCase() === email) exists = true; });
+        if(exists) return alert('User already exists in users collection');
+
+        // Save to Firestore users collection
+        await addDoc(collection(db, USERS_COL), {
+          name: name || '',
+          email,
+          password: pass, // for admin-testing only; do not store production passwords in Firestore
+          role,
+          createdAt: new Date()
+        });
+
+        alert('User added to Firestore users collection (for testing). For production, use Firebase Auth.');
+        document.getElementById('u_name').value = '';
+        document.getElementById('u_email').value = '';
+        document.getElementById('u_pass').value = '';
+        loadUsers();
+      } catch(err){ console.error(err); alert('Error adding user'); }
+    };
+
+    window.startUserEdit = async function(id){
+      try{
+        const d = await getDoc(doc(db, USERS_COL, id));
+        if(!d.exists()) return alert('User not found');
+        const u = d.data();
+        const newName = prompt('Name', u.name || '');
+        const newEmail = prompt('Email', u.email || '');
+        const newRole = prompt('Role (user/admin)', u.role || 'user');
+        const newPass = prompt('New password (leave empty to keep current)', '');
+        const payload = {};
+        if(newName !== null) payload.name = newName;
+        if(newEmail !== null) payload.email = newEmail;
+        if(newRole !== null) payload.role = newRole;
+        if(newPass !== null && newPass !== '') payload.password = newPass;
+        if(Object.keys(payload).length === 0) return alert('No changes made');
+        await updateDoc(doc(db, USERS_COL, id), Object.assign(payload, { updatedAt: new Date() }));
+        alert('User updated');
+        loadUsers();
+      } catch(err){ console.error(err); alert('Error updating user'); }
+    };
+
+    window.deleteUser = async function(id){
+      if(!confirm('Delete user?')) return;
+      try{
+        await deleteDoc(doc(db, USERS_COL, id));
+        alert('Deleted');
+        loadUsers();
+      } catch(err){ console.error(err); alert('Error deleting user'); }
+    };
+
+    // ------------- Export models -------------
+    window.exportModels = async function(){
+      try{
+        const snap = await getDocs(collection(db, MODELS_COL));
+        const arr = [];
+        snap.forEach(d => arr.push(Object.assign({ id: d.id }, d.data())));
+        const blob = new Blob([JSON.stringify(arr, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'mobileModels.json'; a.click();
+        URL.revokeObjectURL(url);
+      } catch(err){ console.error(err); alert('Export failed'); }
+    };
+
+    // ------------- Sign out -------------
+    window.signOutAdmin = async function(){
+      try{ await signOut(auth); window.location.href = 'admin-login.html'; }
+      catch(e){ console.error(e); alert('Sign out failed'); }
+    };
+
+    window.openUserPanel = function(){ window.location.href = 'index.html'; };
+
+    // small helper
+    function formatNumber(n){
+      if(n === undefined || n === null) return '0';
+      const num = Number(n) || 0;
+      return num.toLocaleString('en-IN', {maximumFractionDigits: 2});
+    }
+  </script>
 </body>
 </html>
-
-
