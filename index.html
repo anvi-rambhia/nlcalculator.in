@@ -21,6 +21,38 @@ h2{color:#007bff;margin:0}
 </style>
 </head>
 <body>
+  <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyByEiFSbsDlrCtVJjZgvbCoYPt_io2CpTk",
+  authDomain: "nlcalulator.firebaseapp.com",
+  projectId: "nlcalulator",
+  storageBucket: "nlcalulator.firebasestorage.app",
+  messagingSenderId: "783940164431",
+  appId: "1:783940164431:web:edd9e24a8e6901942b433a",
+  measurementId: "G-D8CXJYMPG0"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// 🔒 Redirect if not logged in
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "user-login.html"; // Redirect back to login page
+  }
+});
+
+// Optional: Logout button handler
+window.logoutUser = function() {
+  signOut(auth).then(() => {
+    window.location.href = "user-login.html";
+  });
+};
+</script>
+
 <div class="wrap">
   <div class="header">
     <h2>📱 Available Models</h2>
@@ -104,3 +136,4 @@ loadModels();
 </script>
 </body>
 </html>
+
