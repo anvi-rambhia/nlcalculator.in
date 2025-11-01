@@ -31,10 +31,6 @@ label{font-weight:600;font-size:.95rem;margin-top:6px;display:block}
 .search-row{display:flex;gap:8px;margin-bottom:12px;align-items:center}
 .kv{font-size:0.95rem;color:#333}
 .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef3ff;color:#0451b3;font-weight:600;margin-left:6px}
-.user-card{background:#fbfbfd;border-radius:8px;padding:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
-.user-actions button{margin-left:6px;padding:6px 10px;border-radius:6px;border:none;cursor:pointer}
-.user-actions .u-edit{background:#28a745;color:#fff}
-.user-actions .u-del{background:#dc3545;color:#fff}
 @media(max-width:900px){.layout{grid-template-columns:1fr}}
 </style>
 </head>
@@ -67,7 +63,7 @@ label{font-weight:600;font-size:.95rem;margin-top:6px;display:block}
       <p class="note">Data is saved to Firestore collection <code>mobileModels</code>. Use Export to download current data as JSON.</p>
     </div>
 
-    <!-- Right: Add / Edit Model + Users -->
+    <!-- Right: Add / Edit Model -->
     <div class="panel">
       <h3 style="margin-top:0">Add / Edit Model</h3>
 
@@ -135,28 +131,7 @@ label{font-weight:600;font-size:.95rem;margin-top:6px;display:block}
         <button class="btn add" onclick="saveModel()">Save Model</button>
         <button class="btn" onclick="clearForm()">Clear</button>
       </div>
-
-      <hr style="margin:12px 0"/>
-
-      <!-- Users admin -->
-      <h3 style="margin-top:0">Users</h3>
-      <label>Email</label>
-      <input id="u_email" placeholder="email@example.com" />
-      <label>Password</label>
-      <input id="u_pass" type="password" placeholder="password (store only for testing)" />
-      <label>Role</label>
-      <select id="u_role">
-        <option value="user">User</option>
-        <option value="admin">Admin</option>
-      </select>
-
-      <div style="display:flex;gap:8px;margin-top:10px">
-        <button class="btn primary" onclick="addUser()">Add User</button>
-        <button class="btn" onclick="loadUsers()">Show Users</button>
-      </div>
-
-      <div style="margin-top:10px" id="usersList"></div>
-      <p class="note">Users are stored in Firestore collection <code>users</code>. This is for admin convenience and testing only. For production, use Firebase Authentication (recommended).</p>
+      <p class="note">Tip: Edit an existing model from the table — it will load into the form for update.</p>
     </div>
   </div>
 </div>
@@ -173,11 +148,10 @@ import {
   updateDoc,
   deleteDoc,
   query,
-  orderBy,
-  getDoc
+  orderBy
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
-/* Firebase config (your project nlcalulator) */
+/* Your Firebase config (your project nlcalulator) */
 const firebaseConfig = {
   apiKey: "AIzaSyByEiFSbsDlrCtVJjZgvbCoYPt_io2CpTk",
   authDomain: "nlcalulator.firebaseapp.com",
@@ -191,15 +165,15 @@ const firebaseConfig = {
 /* Initialize Firestore */
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const collectionName = "mobileModels";
-const usersCollection = "users";
+const collectionName = "mobileModels"; // chosen name
 
+/* Track currently editing document id */
 let editId = null;
 
 /* Utility: format number */
 function fmt(n){ if(n===undefined||n===null||n==='') return 0; return Number(n).toLocaleString('en-IN'); }
 
-/* ---------------- Models: Save / Load / Edit / Delete ---------------- */
+/* Save / Update model */
 window.saveModel = async function(){
   const name = document.getElementById('m_name').value.trim();
   if(!name) return alert('Enter model name');
@@ -216,34 +190,34 @@ window.saveModel = async function(){
   const banksText = document.getElementById('m_banks').value.trim() || '';
   const eligibleBanks = banksText ? banksText.split(',').map(b=>b.trim()).filter(Boolean) : [];
 
-  const payload = {
-    name, mop, dp, preGstDp, sellout, sellin, ram, rom, ccNo, ccFull, eligibleBanks, updatedAt: new Date()
-  };
+  const payload = { name, mop, dp, preGstDp, sellout, sellin, ram, rom, ccNo, ccFull, eligibleBanks, updatedAt: new Date() };
 
   try {
-    if(editId){
+    if (editId) {
       const ref = doc(db, collectionName, editId);
       await updateDoc(ref, payload);
       alert('✅ Model updated successfully');
-      editId = null;
     } else {
       const docRef = await addDoc(collection(db, collectionName), payload);
-      alert('✅ Model added successfully (id: '+docRef.id+')');
+      alert('✅ Model added successfully — id: ' + docRef.id);
     }
     clearForm();
     loadModels();
-  } catch(err){
-    console.error('Save error', err);
-    alert('❌ Error saving model — check console');
+  } catch (err) {
+    // show full error in UI + console
+    console.error('Firestore save error:', err);
+    alert('Error saving model — check console.\\n' + (err && err.message ? err.message : JSON.stringify(err)));
   }
 };
-
+  
+/* Load models (with optional filter) */
 window.loadModels = async function(){
   const tbody = document.getElementById('modelsTbody');
   tbody.innerHTML = `<tr><td colspan="9">Loading...</td></tr>`;
 
   const qText = (document.getElementById('filterInput').value || '').trim().toLowerCase();
   try {
+    // fetch all models ordered by name
     const q = query(collection(db, collectionName), orderBy('name'));
     const snap = await getDocs(q);
 
@@ -253,9 +227,10 @@ window.loadModels = async function(){
       const m = docSnap.data();
       const id = docSnap.id;
 
+      // Apply simple text filter on name/ram/rom if provided
       if(qText){
         const hay = `${m.name||''} ${m.ram||''} ${m.rom||''}`.toLowerCase();
-        if(!hay.includes(qText)) return;
+        if(!hay.includes(qText)) return; // skip
       }
 
       count++;
@@ -287,8 +262,21 @@ window.loadModels = async function(){
   }
 };
 
+/* Start editing: load doc into form */
 window.startEdit = async function(id){
   try {
+    const docRef = doc(db, collectionName, id);
+    const snap = await getDocs(collection(db, collectionName)); // not ideal but ensures collection exists
+    // Instead get single doc by docRef (use getDoc)
+    // To avoid import of getDoc in top, we'll simply fetch all and match id (simple).
+    // But better: use getDoc — let's import and use it:
+  } catch(e){
+    console.error(e);
+  }
+
+  // Fetch single doc properly:
+  try {
+    const { getDoc } = await import("https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js");
     const docRef = doc(db, collectionName, id);
     const docSnap = await getDoc(docRef);
     if(!docSnap.exists()){
@@ -315,6 +303,7 @@ window.startEdit = async function(id){
   }
 };
 
+/* Delete model */
 window.deleteModel = async function(id){
   if(!confirm('Delete this model?')) return;
   try {
@@ -327,128 +316,23 @@ window.deleteModel = async function(id){
   }
 };
 
+/* Clear form */
 window.clearForm = function(){
   editId = null;
   ['m_name','m_mop','m_dp','m_preGst','m_sellout','m_sellin','m_ram','m_rom','m_cc_no','m_cc_full','m_banks'].forEach(id=>document.getElementById(id).value='');
 };
 
-/* ---------------- Users: Add / Edit Password / Delete / Load ---------------- */
-
-/**
- * NOTE (important):
- * - This implementation stores user email & password in Firestore collection 'users' for admin convenience/test only.
- * - This is NOT secure for production. For production use Firebase Authentication + server-side Admin SDK / Cloud Function to manage accounts.
- */
-
-async function renderUsersList(){
-  const container = document.getElementById('usersList');
-  container.innerHTML = '<div class="user-card">Loading users...</div>';
-  try {
-    const q = query(collection(db, usersCollection), orderBy('email'));
-    const snap = await getDocs(q);
-    container.innerHTML = '';
-    let found = 0;
-    snap.forEach(d=>{
-      found++;
-      const u = d.data();
-      const div = document.createElement('div');
-      div.className = 'user-card';
-      div.innerHTML = `
-        <div>
-          <div><strong>${u.email}</strong> <span class="small">(${u.role||'user'})</span></div>
-        </div>
-        <div class="user-actions">
-          <button class="u-edit" onclick="startUserEdit('${d.id}')">Edit</button>
-          <button class="u-del" onclick="deleteUser('${d.id}')">Delete</button>
-        </div>
-      `;
-      container.appendChild(div);
-    });
-    if(found===0) container.innerHTML = '<div class="user-card">No users found.</div>';
-  } catch(err){
-    console.error('Users load error', err);
-    container.innerHTML = '<div class="user-card">Error loading users (see console)</div>';
-  }
-}
-window.loadUsers = renderUsersList;
-
-/* Add user (saves to Firestore 'users' collection) */
-window.addUser = async function(){
-  const email = document.getElementById('u_email').value.trim().toLowerCase();
-  const pass = document.getElementById('u_pass').value;
-  const role = document.getElementById('u_role').value;
-
-  if(!email || !pass) return alert('Enter email and password');
-
-  try {
-    // Check duplicate by email
-    const snap = await getDocs(collection(db, usersCollection));
-    let exists = false;
-    snap.forEach(d=>{
-      if((d.data().email||'').toLowerCase() === email) exists = true;
-    });
-    if(exists) return alert('User already exists with this email');
-
-    await addDoc(collection(db, usersCollection), {
-      email, password: pass, role, createdAt: new Date()
-    });
-    alert('User added');
-    document.getElementById('u_email').value='';
-    document.getElementById('u_pass').value='';
-    renderUsersList();
-  } catch(err){
-    console.error('Add user error', err);
-    alert('Error adding user — check console');
-  }
-};
-
-/* Start edit user: show prompt to update password / role */
-window.startUserEdit = async function(docId){
-  try {
-    const docRef = doc(db, usersCollection, docId);
-    const snap = await getDoc(docRef);
-    if(!snap.exists()) return alert('User not found');
-
-    const u = snap.data();
-    const newPass = prompt('Enter new password for ' + u.email + ' (leave blank to keep current):');
-    const newRole = prompt('Enter role for ' + u.email + ' (user/admin). Current: ' + (u.role||'user'), u.role||'user');
-    const updatePayload = {};
-    if(newPass && newPass.trim() !== '') updatePayload.password = newPass.trim();
-    if(newRole && newRole.trim() !== '') updatePayload.role = newRole.trim();
-
-    if(Object.keys(updatePayload).length === 0) return alert('Nothing to update');
-
-    await updateDoc(docRef, Object.assign(updatePayload, { updatedAt: new Date() }));
-    alert('User updated');
-    renderUsersList();
-  } catch(err){
-    console.error('User edit error', err);
-    alert('Error updating user');
-  }
-};
-
-/* Delete user */
-window.deleteUser = async function(docId){
-  if(!confirm('Delete this user?')) return;
-  try {
-    await deleteDoc(doc(db, usersCollection, docId));
-    alert('User deleted');
-    renderUsersList();
-  } catch(err){
-    console.error('Delete user error', err);
-    alert('Error deleting user');
-  }
-};
-
-/* ---------------- misc helpers ---------------- */
+/* Auto pre-gst */
 window.calcPreGst = function(){
   const dp = Number(document.getElementById('m_dp').value) || 0;
   document.getElementById('m_preGst').value = dp ? (dp/1.18).toFixed(2) : '';
 };
 
+/* open user panel and logout (navigations) */
 window.openUserPanel = function(){ window.location.href='index.html'; };
 window.adminLogout = function(){ window.location.href='admin-login.html'; };
 
+/* Export current models to JSON (download) */
 window.exportModels = async function(){
   try {
     const snap = await getDocs(collection(db, collectionName));
@@ -466,9 +350,8 @@ window.exportModels = async function(){
   }
 };
 
-/* initial load */
+/* Initial load */
 loadModels();
-renderUsersList();
 
 </script>
 </body>
