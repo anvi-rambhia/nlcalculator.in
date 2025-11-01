@@ -307,13 +307,16 @@ function renderModels(models) {
       const dealer = parseFloat(dealerInput.value);
       if (isNaN(dealer)) return alert("Enter valid dealer %");
 
-      // ✅ Fixed iPhone detection (case-insensitive + supports 'Apple')
+      // ✅ Case-insensitive detection for 'iPhone' or 'Apple'
       const name = (m.name || "").toLowerCase();
       const isIphone = name.includes("iphone") || name.includes("apple");
 
-      // ✅ Use correct value for NLC
-      const baseValue = isIphone ? m.dp : m.preGstDp;
-      const nlc = baseValue - (baseValue * dealer / 100);
+      // ✅ Correct calculation for iPhone vs others
+      const dp = parseFloat(m.dp) || 0;
+      const preGstDp = parseFloat(m.preGstDp) || 0;
+      const nlc = isIphone
+        ? dp - (dp * dealer / 100)
+        : dp - (preGstDp * dealer / 100);
 
       finalVal.textContent = "₹" + nlc.toFixed(2);
     });
@@ -322,7 +325,9 @@ function renderModels(models) {
   });
 }
 
+
 </script>
 </body>
 </html>
+
 
