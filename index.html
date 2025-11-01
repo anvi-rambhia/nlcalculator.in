@@ -307,16 +307,17 @@ function renderModels(models) {
       const dealer = parseFloat(dealerInput.value);
       if (isNaN(dealer)) return alert("Enter valid dealer %");
 
-      // ✅ Case-insensitive detection for 'iPhone' or 'Apple'
       const name = (m.name || "").toLowerCase();
       const isIphone = name.includes("iphone") || name.includes("apple");
 
-      // ✅ Correct calculation for iPhone vs others
-      const dp = parseFloat(m.dp) || 0;
-      const preGstDp = parseFloat(m.preGstDp) || 0;
-      const nlc = isIphone
-        ? dp - (dp * dealer / 100)
-        : dp - (preGstDp * dealer / 100);
+      let nlc;
+      if (isIphone) {
+        // ✅ iPhone formula
+        nlc = m.mop - (m.mop * dealer / 100);
+      } else {
+        // ✅ Other models formula
+        nlc = m.dp - (m.preGstDp * dealer / 100);
+      }
 
       finalVal.textContent = "₹" + nlc.toFixed(2);
     });
@@ -329,6 +330,7 @@ function renderModels(models) {
 </script>
 </body>
 </html>
+
 
 
 
