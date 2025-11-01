@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Kore Mobiles — User Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --blue: #007bff;
+  --bg: #f8f9fb;
+  --white: #fff;
+  --shadow: 0 4px 18px rgba(0,0,0,0.08);
+}
+body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  background: var(--bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.card {
+  background: var(--white);
+  box-shadow: var(--shadow);
+  border-radius: 14px;
+  padding: 30px 28px;
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+}
+h2 {
+  color: var(--blue);
+  margin-bottom: 20px;
+}
+input {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+button {
+  width: 100%;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+button:hover {
+  background: #0062d1;
+}
+p {
+  color: #555;
+  font-size: 0.9rem;
+  margin-top: 10px;
+}
+.error {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 8px;
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h2>🔐 User Login</h2>
+  <input type="email" id="email" placeholder="Enter your email" required />
+  <input type="password" id="password" placeholder="Enter your password" required />
+  <button onclick="userLogin()">Login</button>
+  <p id="errorMsg" class="error"></p>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyByEiFSbsDlrCtVJjZgvbCoYPt_io2CpTk",
+  authDomain: "nlcalulator.firebaseapp.com",
+  projectId: "nlcalulator",
+  storageBucket: "nlcalulator.firebasestorage.app",
+  messagingSenderId: "783940164431",
+  appId: "1:783940164431:web:edd9e24a8e6901942b433a",
+  measurementId: "G-D8CXJYMPG0"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+window.userLogin = async function() {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const errorMsg = document.getElementById('errorMsg');
+  errorMsg.textContent = '';
+
+  if (!email || !password) {
+    errorMsg.textContent = 'Please enter email and password.';
+    return;
+  }
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    window.location.href = "index.html";
+  } catch (error) {
+    errorMsg.textContent = "Invalid email or password.";
+  }
+};
+</script>
+
+</body>
+</html>
