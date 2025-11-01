@@ -13,28 +13,21 @@
     button{width:100%;padding:12px;border-radius:8px;border:none;background:#0b63d6;color:#fff;font-weight:600;cursor:pointer}
     button:hover{opacity:.95}
     .msg{height:18px;margin-top:10px;text-align:center;font-size:13px}
-    .note{margin-top:10px;color:#666;font-size:13px;text-align:center}
-    a.small{display:block;margin-top:8px;text-align:center;color:#0b63d6}
   </style>
 </head>
 <body>
   <div class="card">
     <h2>Admin Login</h2>
-    <input id="email" type="email" placeholder="admin email (e.g. anvi@koremobiles.com)" />
+    <input id="email" type="email" placeholder="Email" />
     <input id="password" type="password" placeholder="Password" />
-    <button id="loginBtn">Sign in</button>
+    <button id="loginBtn">Login</button>
     <div class="msg" id="msg"></div>
-    <div class="note">Make sure Email/Password sign-in is enabled in Firebase Auth</div>
-    <a class="small" href="admin.html">(Skip to admin.html)</a>
   </div>
 
   <script type="module">
-    // ---------- Imports ----------
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
-    // ---------- Firebase config (your project) ----------
     const firebaseConfig = {
       apiKey: "AIzaSyByEiFSbsDlrCtVJjZgvbCoYPt_io2CpTk",
       authDomain: "nlcalulator.firebaseapp.com",
@@ -45,77 +38,47 @@
       measurementId: "G-D8CXJYMPG0"
     };
 
-    // ---------- Init ----------
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);           // <-- required (fixes "auth is not defined")
     const db = getFirestore(app);
 
-    // ---------- Elements ----------
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
     const loginBtn = document.getElementById('loginBtn');
     const msg = document.getElementById('msg');
 
-    // ---------- Login flow ----------
     loginBtn.addEventListener('click', async () => {
-      msg.style.color = '#0b63d6';
-      msg.textContent = 'Signing in...';
+      msg.textContent = "Checking...";
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
 
-      const email = (document.getElementById('email').value || '').trim();
-      const password = (document.getElementById('password').value || '').trim();
-      if(!email || !password){ msg.style.color='red'; msg.textContent='Enter email and password'; return; }
+      if (!email || !password) {
+        msg.textContent = "Please fill all fields.";
+        return;
+      }
 
       try {
-        // Sign in with Firebase Auth
-        const ucred = await signInWithEmailAndPassword(auth, email, password);
-        const user = ucred.user;
-        console.log('Signed in user:', user.email, user.uid);
+        const querySnapshot = await getDocs(collection(db, "admins"));
+        let valid = false;
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          if (data.email === email && data.password === password) valid = true;
+        });
 
-        // Verify admin in Firestore by checking admins collection for matching email
-        const adminsRef = collection(db, 'admins');
-        const q = query(adminsRef, where('email', '==', user.email.toLowerCase()));
-        const snap = await getDocs(q);
-
-        if(snap.empty){
-          // fallback: try checking doc with UID as ID (if you used UID doc)
-          // Optional: you might have admins/{uid} doc. We'll check that too:
-          const q2 = query(adminsRef, where('uid', '==', user.uid));
-          const snap2 = await getDocs(q2);
-          if(snap2.empty){
-            // not an admin
-            msg.style.color = 'red';
-            msg.textContent = 'Access denied — admin record not found in Firestore (collection: admins).';
-            // sign out the user session for safety
-            try { await auth.signOut(); } catch(e){ console.warn('signOut failed', e); }
-            return;
-          }
-        }
-
-        // OK admin -> set session flag and go to admin page
-        sessionStorage.setItem('kore_admin_email', user.email);
-        msg.style.color = 'green';
-        msg.textContent = 'Login OK — redirecting to admin panel...';
-        setTimeout(()=> window.location.href = 'admin.html', 700);
-
-      } catch(err){
-        console.error('Login error', err);
-        msg.style.color = 'red';
-        // show friendly message
-        if(err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
-          msg.textContent = 'Invalid email or password';
-        } else if(err.code === 'auth/network-request-failed') {
-          msg.textContent = 'Network error — check your connection';
+        if (valid) {
+          sessionStorage.setItem("adminEmail", email);
+          msg.style.color = "green";
+          msg.textContent = "Login successful!";
+          setTimeout(() => window.location.href = "admin.html", 1000);
         } else {
-          msg.textContent = err.message || 'Login failed';
+          msg.style.color = "red";
+          msg.textContent = "Invalid credentials";
         }
+      } catch (err) {
+        console.error(err);
+        msg.style.color = "red";
+        msg.textContent = "Error connecting to server.";
       }
     });
-
-    // ---------- Helpful dev check ----------
-    // If this page is opened via file://, module imports will fail. Detect and warn:
-    if(location.protocol === 'file:'){
-      const m = document.getElementById('msg');
-      m.style.color = 'orange';
-      m.textContent = 'Warning: open this page via http://localhost not file:// — run a local server.';
-    }
   </script>
 </body>
 </html>
