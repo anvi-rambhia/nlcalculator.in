@@ -323,7 +323,7 @@ function renderModels(models) {
         nlc = m.mop - (m.mop * dealer / 100);
       } else if (isSamsung) {
         // 📱 Samsung
-        nlc = dp - (preGstDp * dealer / 100) - (sellout - 1000) - sellin;
+        nlc = dp - (preGstDp * dealer / 100) - sellout - sellin;
       } else {
         // 🔷 Other models
         nlc = dp - (preGstDp * dealer / 100) - (sellout - (sellout * 0.18)) - sellin;
@@ -340,3 +340,4 @@ function renderModels(models) {
 </script>
 </body>
 </html>
+
