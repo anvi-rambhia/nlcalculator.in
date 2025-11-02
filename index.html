@@ -290,6 +290,8 @@ function renderModels(models) {
       <h4>${m.name || ""}</h4>
       <div class="info">MOP: ₹${m.mop || 0}</div>
       <div class="info">No Cost EMI: ₹${m.noCostEmi || 0} | Full Swipe: ₹${m.fullSwipe || 0}</div>
+      <div class="info">Sellout: ₹${m.sellout || 0}</div>
+      <div class="info">Sellin: ₹${m.sellin || 0}</div>
       <div class="info">Eligible Banks: ${m.eligibleBanks || "-"}</div>
       <div class="calc-box">
         <input type="number" placeholder="Dealer %" class="dealerInput" style="flex:1.3; padding:10px; font-size:1rem;"/>
@@ -317,15 +319,14 @@ function renderModels(models) {
       const sellin = m.sellin || 0;
 
       if (isIphone) {
-        // 🧮 iPhone formula
+        // 🍏 iPhone
         nlc = m.mop - (m.mop * dealer / 100);
       } else if (isSamsung) {
-        // 🧮 Samsung formula
+        // 📱 Samsung
         nlc = dp - (preGstDp * dealer / 100) - (sellout - 1000) - sellin;
       } else {
-        // 🧮 Other models
-        const selloutAfter18 = sellout - (sellout * 0.18);
-        nlc = dp - (preGstDp * dealer / 100) - selloutAfter18 - sellin;
+        // 🔷 Other models
+        nlc = dp - (preGstDp * dealer / 100) - (sellout - (sellout * 0.18)) - sellin;
       }
 
       finalVal.textContent = "₹" + nlc.toFixed(2);
@@ -336,13 +337,6 @@ function renderModels(models) {
     modelsGrid.appendChild(card);
   });
 }
-  
 </script>
 </body>
 </html>
-
-
-
-
-
-
