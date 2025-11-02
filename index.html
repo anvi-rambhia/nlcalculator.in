@@ -328,7 +328,7 @@ function renderModels(models) {
       if (isIphone) {
         nlc = m.mop - (m.mop * dealer / 100);
       } else if (isSamsung) {
-        nlc = dp - (preGstDp * dealer / 100) - sellout - sellin - upgrade;
+        nlc = dp - (preGstDp * dealer / 100) - sellout - sellin - (upgrade-1000);
       } else {
         nlc = dp - (preGstDp * dealer / 100) - (sellout - (sellout * 0.18)) - sellin;
       }
@@ -344,3 +344,4 @@ function renderModels(models) {
 </script>
 </body>
 </html>
+
