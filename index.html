@@ -282,13 +282,13 @@ searchInput.addEventListener("input", e => {
 function renderModels(models) {
   modelsGrid.innerHTML = "";
   if (!models.length) return;
+
   models.forEach(m => {
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
       <h4>${m.name || ""}</h4>
-      <div class="info">MOP: ₹${m.mop || 0} | DP: ₹${m.dp || 0}</div>
-      <div class="info">Pre-GST DP: ₹${m.preGstDp || 0}</div>
+      <div class="info">MOP: ₹${m.mop || 0}</div>
       <div class="info">Sellout: ₹${m.sellout || 0} | Sellin: ₹${m.sellin || 0}</div>
       <div class="info">No Cost EMI: ₹${m.noCostEmi || 0} | Full Swipe: ₹${m.fullSwipe || 0}</div>
       <div class="info">Eligible Banks: ${m.eligibleBanks || "-"}</div>
@@ -310,12 +310,13 @@ function renderModels(models) {
       const name = (m.name || "").toLowerCase();
       const isIphone = name.includes("iphone") || name.includes("apple");
 
+      // ✅ Formula:
+      // For iPhone → Final NLC = MOP - (MOP × Dealer%)
+      // For Others → Final NLC = DP - (Pre-GST DP × Dealer%)
       let nlc;
       if (isIphone) {
-        // ✅ iPhone formula
         nlc = m.mop - (m.mop * dealer / 100);
       } else {
-        // ✅ Other models formula
         nlc = m.dp - (m.preGstDp * dealer / 100);
       }
 
@@ -325,11 +326,11 @@ function renderModels(models) {
     modelsGrid.appendChild(card);
   });
 }
-
-
+  
 </script>
 </body>
 </html>
+
 
 
 
