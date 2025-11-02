@@ -289,7 +289,6 @@ function renderModels(models) {
     card.innerHTML = `
       <h4>${m.name || ""}</h4>
       <div class="info">MOP: ₹${m.mop || 0}</div>
-      <div class="info">Sellout: ₹${m.sellout || 0} | Sellin: ₹${m.sellin || 0}</div>
       <div class="info">No Cost EMI: ₹${m.noCostEmi || 0} | Full Swipe: ₹${m.fullSwipe || 0}</div>
       <div class="info">Eligible Banks: ${m.eligibleBanks || "-"}</div>
       <div class="calc-box">
@@ -309,18 +308,29 @@ function renderModels(models) {
 
       const name = (m.name || "").toLowerCase();
       const isIphone = name.includes("iphone") || name.includes("apple");
+      const isSamsung = name.includes("samsung");
 
-      // ✅ Formula:
-      // For iPhone → Final NLC = MOP - (MOP × Dealer%)
-      // For Others → Final NLC = DP - (Pre-GST DP × Dealer%)
       let nlc;
+      const dp = m.dp || 0;
+      const preGstDp = m.preGstDp || 0;
+      const sellout = m.sellout || 0;
+      const sellin = m.sellin || 0;
+
       if (isIphone) {
+        // 🧮 iPhone formula
         nlc = m.mop - (m.mop * dealer / 100);
+      } else if (isSamsung) {
+        // 🧮 Samsung formula
+        nlc = dp - (preGstDp * dealer / 100) - (sellout - 1000) - sellin;
       } else {
-        nlc = m.dp - (m.preGstDp * dealer / 100);
+        // 🧮 Other models
+        const selloutAfter18 = sellout - (sellout * 0.18);
+        nlc = dp - (preGstDp * dealer / 100) - selloutAfter18 - sellin;
       }
 
       finalVal.textContent = "₹" + nlc.toFixed(2);
+      finalVal.style.color = "#007bff";
+      finalVal.style.fontWeight = "700";
     });
 
     modelsGrid.appendChild(card);
@@ -330,6 +340,7 @@ function renderModels(models) {
 </script>
 </body>
 </html>
+
 
 
 
