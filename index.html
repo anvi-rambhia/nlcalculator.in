@@ -297,13 +297,13 @@ function renderModels(models) {
       <div class="info">Sellout: ₹${m.sellout || 0} | Sellin: ₹${m.sellin || 0}</div>
       <div class="info">No Cost EMI: ₹${m.noCostEmi || 0} | Full Swipe: ₹${m.fullSwipe || 0}</div>
       <div class="info">Eligible Banks: ${m.eligibleBanks || "-"}</div>
-      <div class="info">Features: ${m.features || "-"}</div>
       ${upgradeLine}
       <div class="calc-box">
         <input type="number" placeholder="Dealer %" class="dealerInput" style="flex:1.3; padding:10px; font-size:1rem;"/>
         <button class="primary calcBtn" style="padding:10px 14px; font-size:0.95rem;">Calculate NLC</button>
       </div>
       <div class="final">Final NLC: <span class="finalVal">—</span></div>
+      <div class="info">Features: ${m.features || "-"}</div>
     `;
 
     const calcBtn = card.querySelector(".calcBtn");
@@ -344,4 +344,5 @@ function renderModels(models) {
 </script>
 </body>
 </html>
+
 
