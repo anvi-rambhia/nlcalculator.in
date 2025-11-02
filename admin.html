@@ -1,224 +1,194 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Kore Mobiles — Admin Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
-<style>
-:root{--blue:#007bff;--green:#28a745;--red:#dc3545;--bg:#f7f9fc}
-body{font-family:'Poppins',sans-serif;margin:0;background:var(--bg);color:#111}
-.wrap{max-width:1000px;margin:18px auto;padding:14px}
-.header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-h2{color:var(--blue);margin:0;font-size:1.4rem}
-.btn{padding:10px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:600}
-.primary{background:var(--blue);color:#fff}
-.logout{background:var(--red);color:#fff}
-.layout{display:grid;grid-template-columns:1fr 420px;gap:14px}
-.panel{background:#fff;border-radius:12px;padding:12px;box-shadow:0 12px 30px rgba(0,0,0,0.06)}
-.table{width:100%;border-collapse:collapse;margin-top:8px}
-.table th,.table td{padding:8px;border-bottom:1px solid #eee;text-align:left;font-size:.95rem;vertical-align:middle}
-.actions button{margin-right:6px;padding:6px 10px;border-radius:8px;border:none;cursor:pointer}
-.edit{background:#ffc107;color:#111}
-.del{background:#dc3545;color:#fff}
-.add{background:var(--green);color:#fff}
-.note{font-size:.9rem;color:#666;margin-top:8px}
-@media(max-width:900px){.layout{grid-template-columns:1fr}}
-input,select{width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;margin-top:4px}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel - Mobile Models</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #f8f9fa;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h2 {
+      margin-top: 20px;
+      font-weight: 600;
+      color: #333;
+    }
+    .form-container {
+      width: 90%;
+      max-width: 600px;
+      background: #fff;
+      padding: 20px 25px;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      margin-top: 20px;
+    }
+    label {
+      display: block;
+      font-weight: 500;
+      margin-top: 12px;
+      color: #333;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 20px;
+      width: 100%;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .model-list {
+      margin-top: 30px;
+      width: 90%;
+      max-width: 800px;
+    }
+    .model-item {
+      background: #fff;
+      padding: 15px 20px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    .model-item h4 {
+      margin: 0 0 5px 0;
+      font-size: 1.1rem;
+      color: #333;
+    }
+    .model-item p {
+      margin: 3px 0;
+      color: #555;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="header">
-    <h2>⚙️ Admin Dashboard</h2>
-    <div style="display:flex;gap:8px">
-      <button class="btn primary" onclick="showPanel('modelsPanel')">📱 Models</button>
-      <button class="btn primary" onclick="showPanel('usersPanel')">👤 Users</button>
-      <button class="btn logout" onclick="adminLogout()">Logout</button>
-    </div>
+  <h2>Admin Panel</h2>
+  <div class="form-container">
+    <label>Model Name:</label>
+    <input type="text" id="name" placeholder="Enter model name" />
+
+    <label>MOP:</label>
+    <input type="number" id="mop" placeholder="Enter MOP" />
+
+    <label>DP:</label>
+    <input type="number" id="dp" placeholder="Enter DP" />
+
+    <label>Pre-GST DP:</label>
+    <input type="number" id="preGstDp" placeholder="Enter Pre-GST DP" />
+
+    <label>Sellout:</label>
+    <input type="number" id="sellout" placeholder="Enter Sellout" />
+
+    <label>Sellin:</label>
+    <input type="number" id="sellin" placeholder="Enter Sellin" />
+
+    <label>Eligible Banks:</label>
+    <input type="text" id="eligibleBanks" placeholder="Enter eligible banks" />
+
+    <!-- 🆕 NEW FIELDS -->
+    <label>Features:</label>
+    <input type="text" id="features" placeholder="Enter phone features" />
+
+    <label>Upgrade (Samsung only):</label>
+    <input type="number" id="upgrade" placeholder="Enter upgrade amount" />
+
+    <button id="saveBtn">Save Model</button>
   </div>
 
-  <!-- MODELS PANEL -->
-  <div id="modelsPanel" class="layout">
-    <div class="panel">
-      <h3>Models</h3>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Model</th><th>MOP</th><th>DP</th><th>Pre-GST DP</th><th>Sellout</th><th>Sellin</th>
-            <th>No Cost EMI</th><th>Full Swipe</th><th>Eligible Banks</th><th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="modelsTbody"></tbody>
-      </table>
-      <p class="note">Data is saved to Firestore collection <code>mobileModels</code>.</p>
-    </div>
+  <div class="model-list" id="modelList"></div>
 
-    <div class="panel">
-      <h3>Add / Edit Model</h3>
-      <label>Model Name</label><input id="m_name"/>
-      <label>MOP (₹)</label><input id="m_mop" type="number"/>
-      <label>DP (₹)</label><input id="m_dp" type="number" oninput="calcPreGst()"/>
-      <label>Pre-GST DP (auto)</label><input id="m_preGst" readonly/>
-      <label>Sellout (₹)</label><input id="m_sellout" type="number"/>
-      <label>Sellin (₹)</label><input id="m_sellin" type="number"/>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-      <!-- New Fields -->
-      <label>Credit Card Offer — No Cost EMI (₹)</label><input id="m_noCostEmi" type="number"/>
-      <label>Credit Card Offer — Full Swipe (₹)</label><input id="m_fullSwipe" type="number"/>
-      <label>Eligible Banks (comma separated)</label><input id="m_eligibleBanks" placeholder="HDFC, ICICI, SBI"/>
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
 
-      <button class="btn add" onclick="saveModel()">Save Model</button>
-    </div>
-  </div>
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-  <!-- USERS PANEL -->
-  <div id="usersPanel" class="layout" style="display:none">
-    <div class="panel">
-      <h3>Users</h3>
-      <table class="table">
-        <thead><tr><th>Email</th><th>Name</th><th>Actions</th></tr></thead>
-        <tbody id="usersTbody"></tbody>
-      </table>
-    </div>
-    <div class="panel">
-      <h3>Add / Edit User</h3>
-      <label>User Name</label><input id="u_name"/>
-      <label>Email</label><input id="u_email" type="email"/>
-      <label>Password</label><input id="u_pass" type="password"/>
-      <button class="btn add" onclick="saveUser()">Save User</button>
-    </div>
-  </div>
-</div>
+    const saveBtn = document.getElementById("saveBtn");
+    const modelList = document.getElementById("modelList");
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-  getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import {
-  getAuth, createUserWithEmailAndPassword
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    async function loadModels() {
+      modelList.innerHTML = "";
+      const querySnapshot = await getDocs(collection(db, "models"));
+      querySnapshot.forEach(doc => {
+        const data = doc.data();
+        const div = document.createElement("div");
+        div.className = "model-item";
+        div.innerHTML = `
+          <h4>${data.name}</h4>
+          <p>MOP: ₹${data.mop || 0}</p>
+          <p>DP: ₹${data.dp || 0}</p>
+          <p>Pre-GST DP: ₹${data.preGstDp || 0}</p>
+          <p>Sellout: ₹${data.sellout || 0}</p>
+          <p>Sellin: ₹${data.sellin || 0}</p>
+          <p>Eligible Banks: ${data.eligibleBanks || "-"}</p>
+          <p>Features: ${data.features || "-"}</p>
+          <p>Upgrade: ₹${data.upgrade || 0}</p>
+        `;
+        modelList.appendChild(div);
+      });
+    }
 
-// Firebase Config
-const firebaseConfig = {
-  apiKey: "AIzaSyByEiFSbsDlrCtVJjZgvbCoYPt_io2CpTk",
-  authDomain: "nlcalulator.firebaseapp.com",
-  projectId: "nlcalulator",
-  storageBucket: "nlcalulator.firebasestorage.app",
-  messagingSenderId: "783940164431",
-  appId: "1:783940164431:web:edd9e24a8e6901942b433a",
-  measurementId: "G-D8CXJYMPG0"
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+    saveBtn.addEventListener("click", async () => {
+      const name = document.getElementById("name").value;
+      const mop = parseFloat(document.getElementById("mop").value) || 0;
+      const dp = parseFloat(document.getElementById("dp").value) || 0;
+      const preGstDp = parseFloat(document.getElementById("preGstDp").value) || 0;
+      const sellout = parseFloat(document.getElementById("sellout").value) || 0;
+      const sellin = parseFloat(document.getElementById("sellin").value) || 0;
+      const eligibleBanks = document.getElementById("eligibleBanks").value || "";
+      const features = document.getElementById("features").value || "";
+      const upgrade = parseFloat(document.getElementById("upgrade").value) || 0;
 
-let editModelId = null;
+      if (!name) return alert("Please enter model name");
 
-// ==================== MODELS ====================
-async function loadModels(){
-  const tbody=document.getElementById('modelsTbody');
-  tbody.innerHTML='<tr><td colspan="10">Loading...</td></tr>';
-  const snap=await getDocs(collection(db,'mobileModels'));
-  tbody.innerHTML='';
-  snap.forEach(docSnap=>{
-    const m=docSnap.data(); const id=docSnap.id;
-    const row=`<tr>
-      <td>${m.name||''}</td><td>₹${m.mop||0}</td><td>₹${m.dp||0}</td>
-      <td>₹${m.preGstDp||0}</td><td>₹${m.sellout||0}</td><td>₹${m.sellin||0}</td>
-      <td>₹${m.noCostEmi||0}</td><td>₹${m.fullSwipe||0}</td>
-      <td>${(m.eligibleBanks||[]).join(', ')}</td>
-      <td>
-        <button class='edit' onclick="startEditModel('${id}','${m.name}',${m.mop},${m.dp},${m.sellout},${m.sellin},${m.noCostEmi||0},${m.fullSwipe||0},'${(m.eligibleBanks||[]).join(', ')}')">Edit</button>
-        <button class='del' onclick="deleteModel('${id}')">Delete</button>
-      </td></tr>`;
-    tbody.insertAdjacentHTML('beforeend',row);
-  });
-}
-window.loadModels=loadModels;
+      await addDoc(collection(db, "models"), {
+        name,
+        mop,
+        dp,
+        preGstDp,
+        sellout,
+        sellin,
+        eligibleBanks,
+        features,
+        upgrade
+      });
 
-window.saveModel=async function(){
-  const name=m_name.value.trim();
-  const mop=Number(m_mop.value)||0;
-  const dp=Number(m_dp.value)||0;
-  const preGstDp=dp?Number((dp/1.18).toFixed(2)):0;
-  const sellout=Number(m_sellout.value)||0;
-  const sellin=Number(m_sellin.value)||0;
-  const noCostEmi=Number(m_noCostEmi.value)||0;
-  const fullSwipe=Number(m_fullSwipe.value)||0;
-  const eligibleBanks=(m_eligibleBanks.value.trim()?m_eligibleBanks.value.split(',').map(b=>b.trim()):[]);
+      alert("Model added successfully!");
+      document.querySelectorAll("input").forEach(i => i.value = "");
+      loadModels();
+    });
 
-  const payload={name,mop,dp,preGstDp,sellout,sellin,noCostEmi,fullSwipe,eligibleBanks,updatedAt:new Date()};
-
-  if(editModelId){
-    await updateDoc(doc(db,'mobileModels',editModelId),payload);
-    alert('Model updated');
-  }else{
-    await addDoc(collection(db,'mobileModels'),payload);
-    alert('Model added');
-  }
-  clearModelForm(); loadModels();
-};
-
-window.startEditModel=function(id,name,mop,dp,sellout,sellin,noCostEmi,fullSwipe,banks){
-  editModelId=id;
-  m_name.value=name; m_mop.value=mop; m_dp.value=dp;
-  m_sellout.value=sellout; m_sellin.value=sellin;
-  m_noCostEmi.value=noCostEmi; m_fullSwipe.value=fullSwipe;
-  m_eligibleBanks.value=banks; calcPreGst();
-};
-window.deleteModel=async function(id){
-  if(confirm('Delete this model?')){await deleteDoc(doc(db,'mobileModels',id));loadModels();}
-};
-window.clearModelForm=()=>{
-  editModelId=null;
-  [m_name,m_mop,m_dp,m_sellout,m_sellin,m_preGst,m_noCostEmi,m_fullSwipe,m_eligibleBanks].forEach(el=>el.value='');
-};
-window.calcPreGst=()=>{const dp=Number(m_dp.value)||0;m_preGst.value=dp?(dp/1.18).toFixed(2):'';};
-
-// ==================== USERS ====================
-async function loadUsers(){
-  const tbody=document.getElementById('usersTbody');
-  tbody.innerHTML='<tr><td colspan="3">Loading...</td></tr>';
-  const snap=await getDocs(collection(db,'users'));
-  tbody.innerHTML='';
-  snap.forEach(docSnap=>{
-    const u=docSnap.data();
-    const id=docSnap.id;
-    const row=`<tr><td>${u.email}</td><td>${u.name}</td>
-      <td><button class='del' onclick="deleteUser('${id}')">Delete</button></td></tr>`;
-    tbody.insertAdjacentHTML('beforeend',row);
-  });
-}
-window.loadUsers=loadUsers;
-
-window.saveUser=async function(){
-  const name=u_name.value.trim(),email=u_email.value.trim(),pass=u_pass.value.trim();
-  if(!name||!email||!pass)return alert('Please fill all fields');
-  try{
-    const cred=await createUserWithEmailAndPassword(auth,email,pass);
-    await addDoc(collection(db,'users'),{uid:cred.user.uid,name,email,createdAt:new Date()});
-    alert('✅ User added successfully');
-    u_name.value='';u_email.value='';u_pass.value='';loadUsers();
-  }catch(e){alert('Error adding user: '+e.message);}
-};
-window.deleteUser=async function(id){
-  if(confirm('Delete user from database only?')){await deleteDoc(doc(db,'users',id));loadUsers();}
-};
-
-// ==================== PANEL CONTROL ====================
-window.showPanel=function(id){
-  document.getElementById('modelsPanel').style.display='none';
-  document.getElementById('usersPanel').style.display='none';
-  document.getElementById(id).style.display='grid';
-  if(id==='modelsPanel')loadModels();
-  if(id==='usersPanel')loadUsers();
-};
-window.adminLogout=function(){window.location.href='admin-login.html';};
-
-// Initial load
-loadModels();
-</script>
+    loadModels();
+  </script>
 </body>
 </html>
