@@ -131,7 +131,8 @@ async function loadModels(){
   tbody.innerHTML='';
   snap.forEach(docSnap=>{
     const m=docSnap.data(); const id=docSnap.id;
-    const row=`<tr>
+    const row=document.createElement('tr');
+    row.innerHTML=`
       <td>${m.name||''}</td><td>₹${m.mop||0}</td><td>₹${m.dp||0}</td>
       <td>₹${m.preGstDp||0}</td><td>₹${m.sellout||0}</td><td>₹${m.sellin||0}</td>
       <td>₹${m.noCostEmi||0}</td><td>₹${m.fullSwipe||0}</td>
@@ -140,11 +141,12 @@ async function loadModels(){
       <td>${m.features||''}</td>
       <td>₹${m.upgrade||0}</td>
       <td>₹${m.upgradeFinance||0}</td>
-      <td>
-        <button class='edit' onclick="startEditModel('${id}','${m.name}',${m.mop},${m.dp},${m.sellout},${m.sellin},${m.noCostEmi||0},${m.fullSwipe||0},${m.upiCashback||0},'${(m.eligibleBanks||[]).join(', ')}','${m.features||''}',${m.upgrade||0},${m.upgradeFinance||0})">Edit</button>
-        <button class='del' onclick="deleteModel('${id}')">Delete</button>
-      </td></tr>`;
-    tbody.insertAdjacentHTML('beforeend',row);
+      <td><button class='edit'>Edit</button> <button class='del'>Delete</button></td>`;
+    row.querySelector('.edit').addEventListener('click',()=>startEditModel(
+      id,m.name,m.mop,m.dp,m.sellout,m.sellin,m.noCostEmi,m.fullSwipe,m.upiCashback,(m.eligibleBanks||[]).join(', '),m.features||'',m.upgrade,m.upgradeFinance
+    ));
+    row.querySelector('.del').addEventListener('click',()=>deleteModel(id));
+    tbody.appendChild(row);
   });
 }
 window.loadModels=loadModels;
