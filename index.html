@@ -302,7 +302,10 @@ function renderModels(models) {
       ? `<div class="info">Upgrade: ₹${m.upgrade}</div>` 
       : "";
 
-    // Convert features into list points
+    const upgradeFinanceLine = (m.upgradeFinance && m.upgradeFinance !== "0" && m.upgradeFinance !== "") 
+      ? `<div class="info">Upgrade for Finance: ₹${m.upgradeFinance}</div>` 
+      : "";
+
     let featuresHtml = "";
     if (m.features) {
       const featuresArray = m.features.split(/[.,;\n]/).filter(f => f.trim() !== "");
@@ -316,6 +319,7 @@ function renderModels(models) {
       <div class="info">No Cost EMI: ₹${m.noCostEmi || 0} | Full Swipe: ₹${m.fullSwipe || 0}</div>
       <div class="info">Eligible Banks: ${m.eligibleBanks || "-"}</div>
       ${upgradeLine}
+      ${upgradeFinanceLine}
       ${featuresHtml}
       <div class="calc-box">
         <input type="number" placeholder="Dealer %" class="dealerInput" style="flex:1.3; padding:10px; font-size:1rem;"/>
@@ -336,22 +340,38 @@ function renderModels(models) {
       const isIphone = name.includes("iphone") || name.includes("apple");
       const isSamsung = name.includes("samsung");
 
-      let nlc;
       const dp = m.dp || 0;
       const preGstDp = m.preGstDp || 0;
       const sellout = m.sellout || 0;
       const sellin = m.sellin || 0;
       const upgrade = parseFloat(m.upgrade || 0);
+      const upgradeFinance = parseFloat(m.upgradeFinance || 0);
+
+      let nlcText = "";
 
       if (isIphone) {
-        nlc = m.mop - (m.mop * dealer / 100);
-      } else if (isSamsung) {
-        nlc = dp - (preGstDp * dealer / 100) - sellout - sellin - (upgrade - 1000);
-      } else {
-        nlc = dp - (preGstDp * dealer / 100) - (sellout - (sellout * 0.18)) - sellin;
+        const nlc = m.mop - (m.mop * dealer / 100);
+        nlcText = `Final NLC: ₹${nlc.toFixed(2)}`;
+      } 
+      else if (isSamsung) {
+        if (!isNaN(upgrade) && upgrade > 0) {
+          const nlcUpgrade = dp - (preGstDp * dealer / 100) - sellout - sellin - (upgrade - 1000);
+          nlcText += `Final NLC (Upgrade): ₹${nlcUpgrade.toFixed(2)}<br>`;
+        }
+
+        if (!isNaN(upgradeFinance) && upgradeFinance > 0) {
+          const nlcFinance = dp - (preGstDp * dealer / 100) - sellout - sellin - (upgradeFinance - 1000);
+          nlcText += `Final NLC (Upgrade for Finance): ₹${nlcFinance.toFixed(2)}`;
+        }
+
+        if (!nlcText) nlcText = "No valid upgrade values found.";
+      } 
+      else {
+        const nlc = dp - (preGstDp * dealer / 100) - (sellout - (sellout * 0.18)) - sellin;
+        nlcText = `Final NLC: ₹${nlc.toFixed(2)}`;
       }
 
-      finalVal.textContent = "₹" + nlc.toFixed(2);
+      finalVal.innerHTML = nlcText;
       finalVal.style.color = "#007bff";
       finalVal.style.fontWeight = "700";
     });
