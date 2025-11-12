@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
 <style>
 :root{--blue:#007bff;--green:#28a745;--red:#dc3545;--bg:#f7f9fc}
-body{font-family:'Poppins',sans-serif;margin:0;margin-left:-19%;background:var(--bg);color:#111}
+body{font-family:'Poppins',sans-serif;margin:0;background:var(--bg);color:#111}
 .wrap{max-width:1000px;margin:18px auto;padding:14px}
 .header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
 h2{color:var(--blue);margin:0;font-size:1.4rem}
@@ -58,7 +58,11 @@ input,select{width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;marg
     </div>
 
     <div class="panel">
-      <h3>Add / Edit Model</h3>
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <h3>Add / Edit Model</h3>
+        <button class="btn primary" onclick="clearModelForm()">➕ New Model</button>
+      </div>
+
       <label>Model Name</label><input id="m_name"/>
       <label>MOP (₹)</label><input id="m_mop" type="number"/>
       <label>DP (₹)</label><input id="m_dp" type="number" oninput="calcPreGst()"/>
@@ -131,8 +135,7 @@ async function loadModels(){
   tbody.innerHTML='';
   snap.forEach(docSnap=>{
     const m=docSnap.data(); const id=docSnap.id;
-    const row=document.createElement('tr');
-    row.innerHTML=`
+    const row=`<tr>
       <td>${m.name||''}</td><td>₹${m.mop||0}</td><td>₹${m.dp||0}</td>
       <td>₹${m.preGstDp||0}</td><td>₹${m.sellout||0}</td><td>₹${m.sellin||0}</td>
       <td>₹${m.noCostEmi||0}</td><td>₹${m.fullSwipe||0}</td>
@@ -141,12 +144,11 @@ async function loadModels(){
       <td>${m.features||''}</td>
       <td>₹${m.upgrade||0}</td>
       <td>₹${m.upgradeFinance||0}</td>
-      <td><button class='edit'>Edit</button> <button class='del'>Delete</button></td>`;
-    row.querySelector('.edit').addEventListener('click',()=>startEditModel(
-      id,m.name,m.mop,m.dp,m.sellout,m.sellin,m.noCostEmi,m.fullSwipe,m.upiCashback,(m.eligibleBanks||[]).join(', '),m.features||'',m.upgrade,m.upgradeFinance
-    ));
-    row.querySelector('.del').addEventListener('click',()=>deleteModel(id));
-    tbody.appendChild(row);
+      <td>
+        <button class='edit' onclick="startEditModel('${id}','${m.name}',${m.mop},${m.dp},${m.sellout},${m.sellin},${m.noCostEmi||0},${m.fullSwipe||0},${m.upiCashback||0},'${(m.eligibleBanks||[]).join(', ')}','${m.features||''}',${m.upgrade||0},${m.upgradeFinance||0})">Edit</button>
+        <button class='del' onclick="deleteModel('${id}')">Delete</button>
+      </td></tr>`;
+    tbody.insertAdjacentHTML('beforeend',row);
   });
 }
 window.loadModels=loadModels;
@@ -190,12 +192,20 @@ window.startEditModel=function(id,name,mop,dp,sellout,sellin,noCostEmi,fullSwipe
   m_upgradeFinance.value=upgradeFinance;
   calcPreGst();
 };
+
 window.deleteModel=async function(id){
   if(confirm('Delete this model?')){await deleteDoc(doc(db,'mobileModels',id));loadModels();}
 };
-window.clearModelForm=()=>[
-  m_name,m_mop,m_dp,m_sellout,m_sellin,m_preGst,m_noCostEmi,m_fullSwipe,m_upiCashback,m_eligibleBanks,m_features,m_upgrade,m_upgradeFinance
-].forEach(el=>el.value='');
+
+window.clearModelForm=()=>{
+  editModelId=null; // ✅ FIX: ensures new model adds instead of updating
+  [
+    m_name,m_mop,m_dp,m_sellout,m_sellin,m_preGst,
+    m_noCostEmi,m_fullSwipe,m_upiCashback,m_eligibleBanks,
+    m_features,m_upgrade,m_upgradeFinance
+  ].forEach(el=>el.value='');
+};
+
 window.calcPreGst=()=>{const dp=Number(m_dp.value)||0;m_preGst.value=dp?(dp/1.18).toFixed(2):'';};
 
 // ==================== USERS ====================
@@ -224,6 +234,7 @@ window.saveUser=async function(){
     u_name.value='';u_email.value='';u_pass.value='';loadUsers();
   }catch(e){alert('Error adding user: '+e.message);}
 };
+
 window.deleteUser=async function(id){
   if(confirm('Delete user from database only?')){await deleteDoc(doc(db,'users',id));loadUsers();}
 };
@@ -236,6 +247,7 @@ window.showPanel=function(id){
   if(id==='modelsPanel')loadModels();
   if(id==='usersPanel')loadUsers();
 };
+
 window.adminLogout=function(){window.location.href='admin-login.html';};
 
 // Initial load
@@ -243,4 +255,3 @@ loadModels();
 </script>
 </body>
 </html>
-
