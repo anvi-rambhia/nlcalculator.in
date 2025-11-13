@@ -228,7 +228,7 @@ function resetInactivityTimer() {
     }
     alert("Session expired due to inactivity. Please log in again.");
     location.reload();
-  }, 10000);
+  }, 30000);
 }
 
 ["click", "mousemove", "keypress", "scroll", "touchstart"].forEach(event => {
@@ -404,5 +404,6 @@ function renderModels(models) {
 </script>
 </body>
 </html>
+
 
 
