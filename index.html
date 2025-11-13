@@ -215,9 +215,7 @@ button.primary:hover {
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-// ===== AUTO LOGOUT & RELOAD ON INACTIVITY =====
-
-// Logout + reload after 5 minutes (300,000 ms) of inactivity
+  
 let inactivityTimer;
 
 function resetInactivityTimer() {
@@ -230,15 +228,13 @@ function resetInactivityTimer() {
     }
     alert("Session expired due to inactivity. Please log in again.");
     location.reload();
-  }, 300000); // 5 minutes = 300000 ms
+  }, 10000);
 }
 
-// Detect activity (mouse, keyboard, touch)
 ["click", "mousemove", "keypress", "scroll", "touchstart"].forEach(event => {
   window.addEventListener(event, resetInactivityTimer);
 });
 
-// Start the timer when page loads
 resetInactivityTimer();
   
 const firebaseConfig = {
@@ -408,4 +404,5 @@ function renderModels(models) {
 </script>
 </body>
 </html>
+
 
