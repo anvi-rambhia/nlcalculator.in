@@ -144,7 +144,7 @@
 /* FIREBASE SETUP */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyByEiFSbsDlrCtVJjZgvbCoYPt_io2CpTk",
@@ -160,10 +160,9 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-/* ADMIN CREDENTIAL */
 const ADMIN_EMAIL = "anvirambhiya@gmail.com";
 
-/* LOGIN FUNCTION */
+/* LOGIN */
 window.adminLogin = function () {
     let email = loginEmail.value.trim();
     let pass = loginPass.value.trim();
@@ -171,10 +170,9 @@ window.adminLogin = function () {
     signInWithEmailAndPassword(auth, email, pass)
         .then(() => {
             if (email === ADMIN_EMAIL) {
-                // Show admin section
                 loginBox.style.display = "none";
                 adminSection.style.display = "block";
-                loadModels();
+                showPanel('modelsPanel');   // FIX
             } else {
                 alert("❌ You are not an admin");
                 signOut(auth);
@@ -190,51 +188,48 @@ window.adminLogout = function () {
     loginBox.style.display = "block";
 };
 
-/* AUTO CHECK ON PAGE LOAD */
+/* AUTO LOGIN CHECK */
 onAuthStateChanged(auth, user => {
     if (user && user.email === ADMIN_EMAIL) {
         loginBox.style.display = "none";
         adminSection.style.display = "block";
-        loadModels();
+        showPanel('modelsPanel');   // FIX
     } else {
         loginBox.style.display = "block";
         adminSection.style.display = "none";
     }
 });
 
-/* THE REST IS YOUR ORIGINAL FULL CODE BELOW — UNTOUCHED */
-/* -------------------------------------------- */
-/* MODELS, USERS, FORMS — SAME AS YOUR ORIGINAL */
-/* -------------------------------------------- */
-
+/* MODELS */
 let editModelId = null;
 
 async function loadModels() {
     const tbody = document.getElementById('modelsTbody');
-    tbody.innerHTML = '<tr><td colspan="10">Loading...</td></tr>';
-    const snap = await getDocs(collection(db,'mobileModels'));
-    tbody.innerHTML = '';
+    tbody.innerHTML = '<tr><td colspan="14">Loading...</td></tr>';
+
+    const snap = await getDocs(collection(db, 'mobileModels'));
+    tbody.innerHTML = "";
 
     snap.forEach(docSnap => {
         const m = docSnap.data();
         const id = docSnap.id;
 
         const row = `<tr>
-            <td>${m.name||''}</td>
-            <td>₹${m.mop||0}</td>
-            <td>₹${m.dp||0}</td>
-            <td>₹${m.preGstDp||0}</td>
-            <td>₹${m.sellout||0}</td>
-            <td>₹${m.sellin||0}</td>
-            <td>₹${m.noCostEmi||0}</td>
-            <td>₹${m.fullSwipe||0}</td>
-            <td>₹${m.upiCashback||0}</td>
-            <td>${(m.eligibleBanks||[]).join(', ')}</td>
-            <td>${m.features||''}</td>
-            <td>₹${m.upgrade||0}</td>
-            <td>₹${m.upgradeFinance||0}</td>
+            <td>${m.name || ''}</td>
+            <td>₹${m.mop || 0}</td>
+            <td>₹${m.dp || 0}</td>
+            <td>₹${m.preGstDp || 0}</td>
+            <td>₹${m.sellout || 0}</td>
+            <td>₹${m.sellin || 0}</td>
+            <td>₹${m.noCostEmi || 0}</td>
+            <td>₹${m.fullSwipe || 0}</td>
+            <td>₹${m.upiCashback || 0}</td>
+            <td>${(m.eligibleBanks || []).join(', ')}</td>
+            <td>${m.features || ''}</td>
+            <td>₹${m.upgrade || 0}</td>
+            <td>₹${m.upgradeFinance || 0}</td>
             <td>
-                <button class='edit' onclick="startEditModel('${id}','${m.name}',${m.mop},${m.dp},${m.sellout},${m.sellin},${m.noCostEmi||0},${m.fullSwipe||0},${m.upiCashback||0},'${(m.eligibleBanks||[]).join(', ')}','${m.features||''}',${m.upgrade||0},${m.upgradeFinance||0})">Edit</button>
+                <button class='edit' onclick="startEditModel('${id}')">Edit</button>
                 <button class='del' onclick="deleteModel('${id}')">Delete</button>
             </td>
         </tr>`;
@@ -243,125 +238,138 @@ async function loadModels() {
 }
 window.loadModels = loadModels;
 
-window.saveModel = async function(){
-    const name=m_name.value.trim();
-    const mop=Number(m_mop.value)||0;
-    const dp=Number(m_dp.value)||0;
-    const preGstDp=dp?Number((dp/1.18).toFixed(2)):0;
-    const sellout=Number(m_sellout.value)||0;
-    const sellin=Number(m_sellin.value)||0;
-    const noCostEmi=Number(m_noCostEmi.value)||0;
-    const fullSwipe=Number(m_fullSwipe.value)||0;
-    const upiCashback=Number(m_upiCashback.value)||0;
-    const eligibleBanks=m_eligibleBanks.value.trim()?m_eligibleBanks.value.split(',').map(b=>b.trim()):[];
-    const features=m_features.value.trim();
-    const upgrade=Number(m_upgrade.value)||0;
-    const upgradeFinance=Number(m_upgradeFinance.value)||0;
+/* FILL FORM WHEN EDITING */
+window.startEditModel = async function (id) {
+    editModelId = id;
+    const snap = await getDocs(collection(db, 'mobileModels'));
+    snap.forEach(docSnap => {
+        if (docSnap.id === id) {
+            const m = docSnap.data();
+            m_name.value = m.name;
+            m_mop.value = m.mop;
+            m_dp.value = m.dp;
+            m_preGst.value = m.preGstDp;
+            m_sellout.value = m.sellout;
+            m_sellin.value = m.sellin;
+            m_noCostEmi.value = m.noCostEmi;
+            m_fullSwipe.value = m.fullSwipe;
+            m_upiCashback.value = m.upiCashback;
+            m_eligibleBanks.value = (m.eligibleBanks || []).join(', ');
+            m_features.value = m.features;
+            m_upgrade.value = m.upgrade;
+            m_upgradeFinance.value = m.upgradeFinance;
+        }
+    });
+};
 
-    const payload={name,mop,dp,preGstDp,sellout,sellin,noCostEmi,fullSwipe,upiCashback,eligibleBanks,features,upgrade,upgradeFinance,updatedAt:new Date()};
+/* SAVE MODEL */
+window.saveModel = async function () {
+    const dp = Number(m_dp.value) || 0;
 
-    if(editModelId){
-        await updateDoc(doc(db,'mobileModels',editModelId),payload);
-        alert('Model updated');
+    const payload = {
+        name: m_name.value,
+        mop: Number(m_mop.value)||0,
+        dp: dp,
+        preGstDp: dp ? Number((dp/1.18).toFixed(2)) : 0,
+        sellout: Number(m_sellout.value)||0,
+        sellin: Number(m_sellin.value)||0,
+        noCostEmi: Number(m_noCostEmi.value)||0,
+        fullSwipe: Number(m_fullSwipe.value)||0,
+        upiCashback: Number(m_upiCashback.value)||0,
+        eligibleBanks: m_eligibleBanks.value.trim().split(',').map(x=>x.trim()),
+        features: m_features.value.trim(),
+        upgrade: Number(m_upgrade.value)||0,
+        upgradeFinance: Number(m_upgradeFinance.value)||0
+    };
+
+    if (editModelId) {
+        await updateDoc(doc(db, 'mobileModels', editModelId), payload);
+        alert("Model updated");
     } else {
-        await addDoc(collection(db,'mobileModels'),payload);
-        alert('Model added');
+        await addDoc(collection(db, 'mobileModels'), payload);
+        alert("Model added");
     }
 
     clearModelForm();
     loadModels();
 };
 
-window.startEditModel=function(id,name,mop,dp,sellout,sellin,noCostEmi,fullSwipe,upiCashback,banks,features='',upgrade=0,upgradeFinance=0){
-    editModelId=id;
-    m_name.value=name;
-    m_mop.value=mop;
-    m_dp.value=dp;
-    m_sellout.value=sellout;
-    m_sellin.value=sellin;
-    m_noCostEmi.value=noCostEmi;
-    m_fullSwipe.value=fullSwipe;
-    m_upiCashback.value=upiCashback;
-    m_eligibleBanks.value=banks;
-    m_features.value=features;
-    m_upgrade.value=upgrade;
-    m_upgradeFinance.value=upgradeFinance;
-    calcPreGst();
+/* CLEAR FORM */
+window.clearModelForm = function () {
+    editModelId = null;
+    [m_name, m_mop, m_dp, m_preGst, m_sellout, m_sellin, m_noCostEmi,
+     m_fullSwipe, m_upiCashback, m_eligibleBanks, m_features,
+     m_upgrade, m_upgradeFinance].forEach(el => el.value = "");
 };
 
-window.deleteModel=async function(id){
-    if(confirm('Delete this model?')){
-        await deleteDoc(doc(db,'mobileModels',id));
+/* DELETE MODEL */
+window.deleteModel = async function (id) {
+    if (confirm("Delete this model?")) {
+        await deleteDoc(doc(db, 'mobileModels', id));
         loadModels();
     }
 };
 
-window.clearModelForm=()=>{
-    editModelId=null;
-    [ m_name,m_mop,m_dp,m_sellout,m_sellin,m_preGst,m_noCostEmi,
-      m_fullSwipe,m_upiCashback,m_eligibleBanks,m_features,
-      m_upgrade,m_upgradeFinance ].forEach(el=>el.value='');
-};
+/* USERS — FIRESTORE ONLY (NO FIREBASE AUTH) */
+async function loadUsers() {
+    const tbody = document.getElementById('usersTbody');
+    tbody.innerHTML = '<tr><td colspan="3">Loading...</td></tr>';
 
-window.calcPreGst=()=>{const dp=Number(m_dp.value)||0;m_preGst.value=dp?(dp/1.18).toFixed(2):'';};
+    const snap = await getDocs(collection(db, 'users'));
+    tbody.innerHTML = "";
 
-/* USERS */
-async function loadUsers(){
-    const tbody=document.getElementById('usersTbody');
-    tbody.innerHTML='<tr><td colspan="3">Loading...</td></tr>';
-    const snap=await getDocs(collection(db,'users'));
-    tbody.innerHTML='';
+    snap.forEach(docSnap => {
+        const u = docSnap.data();
+        const id = docSnap.id;
 
-    snap.forEach(docSnap=>{
-        const u=docSnap.data();
-        const id=docSnap.id;
-
-        const row=`<tr>
+        const row = `<tr>
             <td>${u.email}</td>
             <td>${u.name}</td>
             <td><button class='del' onclick="deleteUser('${id}')">Delete</button></td>
         </tr>`;
-        tbody.insertAdjacentHTML('beforeend',row);
+        tbody.insertAdjacentHTML('beforeend', row);
     });
 }
-window.loadUsers=loadUsers;
+window.loadUsers = loadUsers;
 
-window.saveUser=async function(){
-    const name=u_name.value.trim(), email=u_email.value.trim(), pass=u_pass.value.trim();
+window.saveUser = async function () {
+    const name = u_name.value.trim();
+    const email = u_email.value.trim().toLowerCase();
+    const pass = u_pass.value.trim();
 
-    if(!name||!email||!pass) return alert('Fill all fields');
+    if (!name || !email || !pass) return alert("Fill all fields");
 
-    try {
-        const cred = await createUserWithEmailAndPassword(auth,email,pass);
-        await addDoc(collection(db,'users'),{
-            uid:cred.user.uid,
-            name,email,
-            createdAt:new Date()
-        });
-        alert("User added");
+    await addDoc(collection(db, "users"), {
+        name, email, password: pass, createdAt: new Date()
+    });
+
+    alert("User added");
+
+    loadUsers();
+    u_name.value = "";
+    u_email.value = "";
+    u_pass.value = "";
+};
+
+window.deleteUser = async function (id) {
+    if (confirm("Delete user?")) {
+        await deleteDoc(doc(db, 'users', id));
         loadUsers();
-        u_name.value=""; u_email.value=""; u_pass.value="";
-    } catch(e){
-        alert("Error: " + e.message);
     }
 };
 
-window.deleteUser=async function(id){
-    if(confirm("Delete user from database?")){
-        await deleteDoc(doc(db,'users',id));
-        loadUsers();
-    }
-};
+/* PANEL SWITCH */
+window.showPanel = function (id) {
+    modelsPanel.style.display = "none";
+    usersPanel.style.display = "none";
 
-window.showPanel=function(id){
-    document.getElementById('modelsPanel').style.display='none';
-    document.getElementById('usersPanel').style.display='none';
-    document.getElementById(id).style.display='grid';
-    if(id==='modelsPanel') loadModels();
-    if(id==='usersPanel') loadUsers();
+    document.getElementById(id).style.display = "grid";
+
+    if (id === "modelsPanel") loadModels();
+    if (id === "usersPanel") loadUsers();
 };
 
 </script>
-
 </body>
 </html>
+
