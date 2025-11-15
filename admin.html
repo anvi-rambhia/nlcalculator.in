@@ -9,11 +9,17 @@
 :root{--blue:#007bff;--green:#28a745;--red:#dc3545;--bg:#f7f9fc}
 body{font-family:'Poppins',sans-serif;margin:0;background:var(--bg);color:#111}
 .wrap{max-width:1000px;margin:18px auto;padding:14px}
-.header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+
 h2{color:var(--blue);margin:0;font-size:1.4rem}
+
 .btn{padding:10px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:600}
 .primary{background:var(--blue);color:#fff}
 .logout{background:var(--red);color:#fff}
+
+input{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid #ccc}
+
+#loginBox{max-width:350px;margin:60px auto;background:#fff;padding:20px;border-radius:12px;box-shadow:0 8px 25px rgba(0,0,0,0.1);}
+
 .layout{display:grid;grid-template-columns:1fr 420px;gap:14px}
 .panel{background:#fff;border-radius:12px;padding:12px;box-shadow:0 12px 30px rgba(0,0,0,0.06)}
 .table{width:100%;border-collapse:collapse;margin-top:8px}
@@ -23,94 +29,111 @@ h2{color:var(--blue);margin:0;font-size:1.4rem}
 .del{background:#dc3545;color:#fff}
 .add{background:var(--green);color:#fff}
 .note{font-size:.9rem;color:#666;margin-top:8px}
-@media(max-width:900px){.layout{grid-template-columns:1fr}}
-input,select{width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;margin-top:4px}
+
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+}
 </style>
 </head>
+
 <body>
+
+<!-- 🔥 LOGIN BOX FIRST -->
+<div id="loginBox">
+  <h2>Admin Login</h2>
+  <label>Email</label>
+  <input id="loginEmail" type="email" placeholder="Enter admin email">
+  
+  <label>Password</label>
+  <input id="loginPassword" type="password" placeholder="Enter password">
+
+  <button class="btn primary" style="width:100%;margin-top:12px" onclick="loginAdmin()">Login</button>
+</div>
+
+<!-- 🔥 DASHBOARD HIDDEN UNTIL LOGIN -->
+<div id="dashboard" style="display:none;">
 <div class="wrap">
-  <div class="header">
-    <h2>⚙️ Admin Dashboard</h2>
-    <div style="display:flex;gap:8px">
-      <button class="btn primary" onclick="showPanel('modelsPanel')">📱 Models</button>
-      <button class="btn primary" onclick="showPanel('usersPanel')">👤 Users</button>
-      <button class="btn logout" onclick="adminLogout()">Logout</button>
-    </div>
-  </div>
 
-  <!-- MODELS PANEL -->
-  <div id="modelsPanel" class="layout">
-    <div class="panel">
-      <h3>Models</h3>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Model</th><th>MOP</th><th>DP</th><th>Pre-GST DP</th>
-            <th>Sellout</th><th>Sellin</th><th>No Cost EMI</th>
-            <th>Full Swipe</th><th>UPI Cashback</th>
-            <th>Eligible Banks</th><th>Features</th>
-            <th>Upgrade</th><th>Finance Upgrade</th><th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="modelsTbody"></tbody>
-      </table>
-      <p class="note">Data is saved to Firestore collection <code>mobileModels</code>.</p>
-    </div>
+<div class="header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+  <h2>⚙️ Admin Dashboard</h2>
 
-    <div class="panel">
-      <div style="display:flex;align-items:center;justify-content:space-between;">
-        <h3>Add / Edit Model</h3>
-        <button class="btn primary" onclick="clearModelForm()">➕ New Model</button>
-      </div>
-
-      <label>Model Name</label><input id="m_name"/>
-      <label>MOP (₹)</label><input id="m_mop" type="number"/>
-      <label>DP (₹)</label><input id="m_dp" type="number" oninput="calcPreGst()"/>
-      <label>Pre-GST DP (auto)</label><input id="m_preGst" readonly/>
-      <label>Sellout (₹)</label><input id="m_sellout" type="number"/>
-      <label>Sellin (₹)</label><input id="m_sellin" type="number"/>
-
-      <label>Credit Card Offer — No Cost EMI (₹)</label><input id="m_noCostEmi" type="number"/>
-      <label>Credit Card Offer — Full Swipe (₹)</label><input id="m_fullSwipe" type="number"/>
-      <label>UPI Cashback (₹)</label><input id="m_upiCashback" type="number"/>
-
-      <label>Eligible Banks (comma separated)</label><input id="m_eligibleBanks" placeholder="HDFC, ICICI, SBI"/>
-
-      <label>Features</label><input id="m_features" placeholder="Enter key features or notes"/>
-      <label>Upgrade (Samsung only, ₹)</label><input id="m_upgrade" type="number"/>
-      <label>Upgrade (Finance, ₹)</label><input id="m_upgradeFinance" type="number"/>
-
-      <button class="btn add" onclick="saveModel()">Save Model</button>
-    </div>
-  </div>
-
-  <!-- USERS PANEL -->
-  <div id="usersPanel" class="layout" style="display:none">
-    <div class="panel">
-      <h3>Users</h3>
-      <table class="table">
-        <thead><tr><th>Email</th><th>Name</th><th>Actions</th></tr></thead>
-        <tbody id="usersTbody"></tbody>
-      </table>
-    </div>
-    <div class="panel">
-      <h3>Add / Edit User</h3>
-      <label>User Name</label><input id="u_name"/>
-      <label>Email</label><input id="u_email" type="email"/>
-      <label>Password</label><input id="u_pass" type="password"/>
-      <button class="btn add" onclick="saveUser()">Save User</button>
-    </div>
+  <div style="display:flex;gap:8px">
+    <button class="btn primary" onclick="showPanel('modelsPanel')">📱 Models</button>
+    <button class="btn primary" onclick="showPanel('usersPanel')">👤 Users</button>
+    <button class="btn logout" onclick="logoutAdmin()">Logout</button>
   </div>
 </div>
 
+<!-- MODELS PANEL -->
+<div id="modelsPanel" class="layout">
+  <div class="panel">
+    <h3>Models</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Model</th><th>MOP</th><th>DP</th><th>PreGST</th>
+          <th>Sellout</th><th>Sellin</th><th>NoCost</th>
+          <th>Swipe</th><th>UPI</th><th>Banks</th>
+          <th>Features</th><th>Upgrade</th><th>Finance</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="modelsTbody"></tbody>
+    </table>
+  </div>
+
+  <div class="panel">
+    <h3>Add / Edit Model</h3>
+    <label>Model Name</label><input id="m_name"/>
+    <label>MOP</label><input id="m_mop" type="number"/>
+    <label>DP</label><input id="m_dp" type="number" oninput="calcPreGst()"/>
+    <label>Pre-GST</label><input id="m_preGst" readonly/>
+    <label>Sellout</label><input id="m_sellout" type="number"/>
+    <label>Sellin</label><input id="m_sellin" type="number"/>
+    <label>No Cost EMI</label><input id="m_noCostEmi" type="number"/>
+    <label>Full Swipe</label><input id="m_fullSwipe" type="number"/>
+    <label>UPI Cashback</label><input id="m_upiCashback" type="number"/>
+    <label>Eligible Banks</label><input id="m_eligibleBanks"/>
+    <label>Features</label><input id="m_features"/>
+    <label>Upgrade</label><input id="m_upgrade" type="number"/>
+    <label>Finance Upgrade</label><input id="m_upgradeFinance" type="number"/>
+
+    <button class="btn add" onclick="saveModel()">Save Model</button>
+  </div>
+</div>
+
+<!-- USERS PANEL -->
+<div id="usersPanel" class="layout" style="display:none;">
+  <div class="panel">
+    <h3>Users</h3>
+    <table class="table">
+      <thead><tr><th>Email</th><th>Name</th><th>Actions</th></tr></thead>
+      <tbody id="usersTbody"></tbody>
+    </table>
+  </div>
+
+  <div class="panel">
+    <h3>Add / Edit User</h3>
+    <label>Name</label><input id="u_name"/>
+    <label>Email</label><input id="u_email" type="email"/>
+    <label>Password</label><input id="u_pass" type="password"/>
+    <button class="btn add" onclick="saveUser()">Save User</button>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- 🔥 JAVASCRIPT -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-  getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import {
-  getAuth, createUserWithEmailAndPassword
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { 
+  getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut 
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+import { 
+  getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc 
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyByEiFSbsDlrCtVJjZgvbCoYPt_io2CpTk",
@@ -121,71 +144,122 @@ const firebaseConfig = {
   appId: "1:783940164431:web:edd9e24a8e6901942b433a",
   measurementId: "G-D8CXJYMPG0"
 };
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
 let editModelId = null;
 
-// ==================== MODELS ====================
-async function loadModels(){
-  const tbody=document.getElementById('modelsTbody');
-  tbody.innerHTML='<tr><td colspan="10">Loading...</td></tr>';
-  const snap=await getDocs(collection(db,'mobileModels'));
-  tbody.innerHTML='';
+window.loginAdmin = function(){
+  const email = loginEmail.value.trim();
+  const pass = loginPassword.value.trim();
+
+  signInWithEmailAndPassword(auth, email, pass)
+  .then(()=>{
+    loginBox.style.display = "none";
+    dashboard.style.display = "block";
+    loadModels();
+  })
+  .catch(()=> alert("Invalid Email or Password"));
+};
+
+window.logoutAdmin = function(){
+  signOut(auth);
+};
+
+// Auto login session
+onAuthStateChanged(auth, (user)=>{
+  if(user){
+    loginBox.style.display="none";
+    dashboard.style.display="block";
+    loadModels();
+  } else {
+    dashboard.style.display="none";
+    loginBox.style.display="block";
+  }
+});
+
+// ===================== MODELS =====================
+// (same as your original functions)
+// ---------------------
+// LOAD MODELS
+window.loadModels = async function(){
+  const tbody = modelsTbody;
+  tbody.innerHTML="<tr><td colspan=10>Loading...</td></tr>";
+
+  const snap = await getDocs(collection(db,'mobileModels'));
+
+  tbody.innerHTML="";
   snap.forEach(docSnap=>{
-    const m=docSnap.data(); const id=docSnap.id;
-    const row=`<tr>
-      <td>${m.name||''}</td><td>₹${m.mop||0}</td><td>₹${m.dp||0}</td>
-      <td>₹${m.preGstDp||0}</td><td>₹${m.sellout||0}</td><td>₹${m.sellin||0}</td>
-      <td>₹${m.noCostEmi||0}</td><td>₹${m.fullSwipe||0}</td>
+    const m = docSnap.data();
+    const id = docSnap.id;
+
+    const row = `
+    <tr>
+      <td>${m.name||''}</td>
+      <td>₹${m.mop||0}</td>
+      <td>₹${m.dp||0}</td>
+      <td>₹${m.preGstDp||0}</td>
+      <td>₹${m.sellout||0}</td>
+      <td>₹${m.sellin||0}</td>
+      <td>₹${m.noCostEmi||0}</td>
+      <td>₹${m.fullSwipe||0}</td>
       <td>₹${m.upiCashback||0}</td>
       <td>${(m.eligibleBanks||[]).join(', ')}</td>
       <td>${m.features||''}</td>
       <td>₹${m.upgrade||0}</td>
       <td>₹${m.upgradeFinance||0}</td>
       <td>
-        <button class='edit' onclick="startEditModel('${id}','${m.name}',${m.mop},${m.dp},${m.sellout},${m.sellin},${m.noCostEmi||0},${m.fullSwipe||0},${m.upiCashback||0},'${(m.eligibleBanks||[]).join(', ')}','${m.features||''}',${m.upgrade||0},${m.upgradeFinance||0})">Edit</button>
+        <button class='edit' onclick="startEditModel('${id}','${m.name}',${m.mop},${m.dp},${m.sellout},${m.sellin},${m.noCostEmi},${m.fullSwipe},${m.upiCashback},'${(m.eligibleBanks||[]).join(', ')}','${m.features}',${m.upgrade},${m.upgradeFinance})">Edit</button>
         <button class='del' onclick="deleteModel('${id}')">Delete</button>
-      </td></tr>`;
+      </td>
+    </tr>`;
     tbody.insertAdjacentHTML('beforeend',row);
   });
-}
-window.loadModels=loadModels;
-
-window.saveModel=async function(){
-  const name=m_name.value.trim();
-  const mop=Number(m_mop.value)||0;
-  const dp=Number(m_dp.value)||0;
-  const preGstDp=dp?Number((dp/1.18).toFixed(2)):0;
-  const sellout=Number(m_sellout.value)||0;
-  const sellin=Number(m_sellin.value)||0;
-  const noCostEmi=Number(m_noCostEmi.value)||0;
-  const fullSwipe=Number(m_fullSwipe.value)||0;
-  const upiCashback=Number(m_upiCashback.value)||0;
-  const eligibleBanks=(m_eligibleBanks.value.trim()?m_eligibleBanks.value.split(',').map(b=>b.trim()):[]);
-  const features=m_features.value.trim();
-  const upgrade=Number(m_upgrade.value)||0;
-  const upgradeFinance=Number(m_upgradeFinance.value)||0;
-
-  const payload={name,mop,dp,preGstDp,sellout,sellin,noCostEmi,fullSwipe,upiCashback,eligibleBanks,features,upgrade,upgradeFinance,updatedAt:new Date()};
-
-  if(editModelId){
-    await updateDoc(doc(db,'mobileModels',editModelId),payload);
-    alert('Model updated');
-  }else{
-    await addDoc(collection(db,'mobileModels'),payload);
-    alert('Model added');
-  }
-  clearModelForm(); loadModels();
 };
 
-window.startEditModel=function(id,name,mop,dp,sellout,sellin,noCostEmi,fullSwipe,upiCashback,banks,features='',upgrade=0,upgradeFinance=0){
+// SAVE MODEL
+window.saveModel = async function(){
+  const payload = {
+    name: m_name.value.trim(),
+    mop: Number(m_mop.value)||0,
+    dp: Number(m_dp.value)||0,
+    preGstDp: m_preGst.value?Number(m_preGst.value):0,
+    sellout: Number(m_sellout.value)||0,
+    sellin: Number(m_sellin.value)||0,
+    noCostEmi: Number(m_noCostEmi.value)||0,
+    fullSwipe: Number(m_fullSwipe.value)||0,
+    upiCashback: Number(m_upiCashback.value)||0,
+    eligibleBanks: m_eligibleBanks.value.trim()?m_eligibleBanks.value.split(','):[],
+    features: m_features.value.trim(),
+    upgrade: Number(m_upgrade.value)||0,
+    upgradeFinance: Number(m_upgradeFinance.value)||0,
+    updatedAt: new Date()
+  };
+
+  if(editModelId){
+    await updateDoc(doc(db,'mobileModels',editModelId), payload);
+    alert("Model Updated");
+  } else {
+    await addDoc(collection(db,'mobileModels'), payload);
+    alert("Model Added");
+  }
+
+  clearModelForm();
+  loadModels();
+};
+
+window.startEditModel = function(id,name,mop,dp,sellout,sellin,noCostEmi,fullSwipe,upi,banks,features,upgrade,upgradeFinance){
   editModelId=id;
-  m_name.value=name; m_mop.value=mop; m_dp.value=dp;
-  m_sellout.value=sellout; m_sellin.value=sellin;
-  m_noCostEmi.value=noCostEmi; m_fullSwipe.value=fullSwipe;
-  m_upiCashback.value=upiCashback;
+  m_name.value=name;
+  m_mop.value=mop;
+  m_dp.value=dp;
+  m_sellout.value=sellout;
+  m_sellin.value=sellin;
+  m_noCostEmi.value=noCostEmi;
+  m_fullSwipe.value=fullSwipe;
+  m_upiCashback.value=upi;
   m_eligibleBanks.value=banks;
   m_features.value=features;
   m_upgrade.value=upgrade;
@@ -193,65 +267,80 @@ window.startEditModel=function(id,name,mop,dp,sellout,sellin,noCostEmi,fullSwipe
   calcPreGst();
 };
 
-window.deleteModel=async function(id){
-  if(confirm('Delete this model?')){await deleteDoc(doc(db,'mobileModels',id));loadModels();}
+window.deleteModel = async function(id){
+  if(confirm("Delete model?")){
+    await deleteDoc(doc(db,'mobileModels',id));
+    loadModels();
+  }
 };
 
-window.clearModelForm=()=>{
-  editModelId=null; // ✅ FIX: ensures new model adds instead of updating
-  [
-    m_name,m_mop,m_dp,m_sellout,m_sellin,m_preGst,
-    m_noCostEmi,m_fullSwipe,m_upiCashback,m_eligibleBanks,
-    m_features,m_upgrade,m_upgradeFinance
-  ].forEach(el=>el.value='');
+window.clearModelForm = function(){
+  editModelId=null;
+  [m_name,m_mop,m_dp,m_sellout,m_sellin,m_preGst,m_noCostEmi,m_fullSwipe,m_upiCashback,m_eligibleBanks,m_features,m_upgrade,m_upgradeFinance]
+  .forEach(el=>el.value="");
 };
 
-window.calcPreGst=()=>{const dp=Number(m_dp.value)||0;m_preGst.value=dp?(dp/1.18).toFixed(2):'';};
+window.calcPreGst = function(){
+  const dp = Number(m_dp.value)||0;
+  m_preGst.value = dp?(dp/1.18).toFixed(2):"";
+};
 
-// ==================== USERS ====================
-async function loadUsers(){
-  const tbody=document.getElementById('usersTbody');
-  tbody.innerHTML='<tr><td colspan="3">Loading...</td></tr>';
-  const snap=await getDocs(collection(db,'users'));
-  tbody.innerHTML='';
+// ===================== USERS =====================
+window.loadUsers = async function(){
+  const tbody = usersTbody;
+  tbody.innerHTML="<tr><td colspan=3>Loading...</td></tr>";
+
+  const snap = await getDocs(collection(db,'users'));
+  tbody.innerHTML="";
+
   snap.forEach(docSnap=>{
     const u=docSnap.data();
     const id=docSnap.id;
-    const row=`<tr><td>${u.email}</td><td>${u.name}</td>
-      <td><button class='del' onclick="deleteUser('${id}')">Delete</button></td></tr>`;
+
+    const row = `
+    <tr>
+      <td>${u.email}</td>
+      <td>${u.name}</td>
+      <td><button class='del' onclick="deleteUser('${id}')">Delete</button></td>
+    </tr>`;
     tbody.insertAdjacentHTML('beforeend',row);
   });
-}
-window.loadUsers=loadUsers;
-
-window.saveUser=async function(){
-  const name=u_name.value.trim(),email=u_email.value.trim(),pass=u_pass.value.trim();
-  if(!name||!email||!pass)return alert('Please fill all fields');
-  try{
-    const cred=await createUserWithEmailAndPassword(auth,email,pass);
-    await addDoc(collection(db,'users'),{uid:cred.user.uid,name,email,createdAt:new Date()});
-    alert('✅ User added successfully');
-    u_name.value='';u_email.value='';u_pass.value='';loadUsers();
-  }catch(e){alert('Error adding user: '+e.message);}
 };
 
-window.deleteUser=async function(id){
-  if(confirm('Delete user from database only?')){await deleteDoc(doc(db,'users',id));loadUsers();}
+window.saveUser = async function(){
+  const name=u_name.value.trim();
+  const email=u_email.value.trim();
+  const pass=u_pass.value.trim();
+
+  if(!name||!email||!pass) return alert("Fill all fields");
+
+  await addDoc(collection(db,'users'),{
+    name,email,createdAt:new Date()
+  });
+
+  alert("User Saved");
+  u_name.value="";u_email.value="";u_pass.value="";
+  loadUsers();
 };
 
-// ==================== PANEL CONTROL ====================
-window.showPanel=function(id){
-  document.getElementById('modelsPanel').style.display='none';
-  document.getElementById('usersPanel').style.display='none';
-  document.getElementById(id).style.display='grid';
-  if(id==='modelsPanel')loadModels();
-  if(id==='usersPanel')loadUsers();
+window.deleteUser = async function(id){
+  if(confirm("Delete user?")){
+    await deleteDoc(doc(db,'users',id));
+    loadUsers();
+  }
 };
 
-window.adminLogout=function(){window.location.href='admin-login.html';};
+window.showPanel = function(id){
+  modelsPanel.style.display="none";
+  usersPanel.style.display="none";
 
-// Initial load
-loadModels();
+  document.getElementById(id).style.display="grid";
+
+  if(id==="modelsPanel") loadModels();
+  if(id==="usersPanel") loadUsers();
+};
+
 </script>
+
 </body>
 </html>
