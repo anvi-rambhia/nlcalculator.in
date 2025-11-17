@@ -48,9 +48,26 @@ button.primary{background:var(--blue);color:white;border:none;padding:10px 16px;
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import { 
+  initializeApp 
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+
+import { 
+  getAuth, 
+  signInWithEmailAndPassword, 
+  signOut, 
+  onAuthStateChanged,
+  setPersistence,
+  browserSessionPersistence
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+import { 
+  getFirestore, 
+  collection, 
+  getDocs, 
+  query, 
+  where 
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyByEiFSbsDlrCtVJjZgvbCoYPt_io2CpTk",
@@ -64,6 +81,11 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+
+// ⭐ VERY IMPORTANT FIX ⭐
+// Do NOT remember login after closing the tab.
+await setPersistence(auth, browserSessionPersistence);
+
 const db = getFirestore(app);
 
 const ADMIN_EMAIL = "anvirambhiya@gmail.com";
@@ -92,7 +114,8 @@ function resetInactivityTimer(){
     location.reload();
   }, 30000);
 }
-['click','mousemove','keypress','scroll','touchstart'].forEach(ev => window.addEventListener(ev, resetInactivityTimer));
+['click','mousemove','keypress','scroll','touchstart']
+.forEach(ev => window.addEventListener(ev, resetInactivityTimer));
 
 /* login */
 loginBtn.addEventListener('click', async ()=>{
@@ -102,9 +125,7 @@ loginBtn.addEventListener('click', async ()=>{
   if(!email||!pass){ loginMsg.textContent = 'Enter email & password'; return; }
   try {
     await signInWithEmailAndPassword(auth, email, pass);
-    // onAuthStateChanged handles rest
   } catch(e){
-    console.error('login err', e);
     loginMsg.textContent = e.message || 'Login failed';
   }
 });
@@ -117,35 +138,36 @@ onAuthStateChanged(auth, async user => {
     userEmail.textContent = email;
     logoutBtn.style.display = 'inline-block';
 
-    // check Firestore users collection for uid and role:user
+    if(email.toLowerCase() === ADMIN_EMAIL.toLowerCase()){
+      window.location.href = 'admin.html';
+      return;
+    }
+
     try {
       const q = query(collection(db,'users'), where('uid','==', user.uid));
       const snap = await getDocs(q);
       let found = false;
+
       snap.forEach(d => {
         const data = d.data();
         if(data.role === 'user') found = true;
       });
 
       if(found){
-        // allow access
         loginPanel.style.display = 'none';
         mainPanel.style.display = 'block';
         loadModels();
       } else {
-        // no profile/role -> access denied
         await signOut(auth);
         loginMsg.textContent = 'Access denied. Contact admin for access.';
       }
 
     } catch(e){
-      console.error('role check err', e);
       await signOut(auth);
       loginMsg.textContent = 'Server error. Try again.';
     }
 
   } else {
-    // logged out
     userEmail.textContent = '';
     logoutBtn.style.display = 'none';
     mainPanel.style.display = 'none';
@@ -165,11 +187,10 @@ async function loadModels(){
     const snap = await getDocs(collection(db,'mobileModels'));
     allModels = [];
     snap.forEach(d => allModels.push({ id: d.id, ...d.data() }));
-    renderModels([]); // empty initially
+    renderModels([]);
   } catch(e){ console.error('loadModels', e); }
 }
 
-/* search -> render */
 searchInput.addEventListener('input', e => {
   const val = e.target.value.toLowerCase().trim();
   if(!val){ modelsGrid.innerHTML = ''; return; }
@@ -177,24 +198,26 @@ searchInput.addEventListener('input', e => {
   renderModels(filtered);
 });
 
-  import { setPersistence, browserSessionPersistence } 
-from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-
-setPersistence(auth, browserSessionPersistence);
-
 function renderModels(models){
   modelsGrid.innerHTML = '';
   if(!models || !models.length) return;
+
   models.forEach(m=>{
     const card = document.createElement('div');
     card.className = 'card';
-    const upgradeLine = (m.upgrade && m.upgrade !== '0') ? `<div>Upgrade: ₹${m.upgrade}</div>` : '';
-    const upgradeFinanceLine = (m.upgradeFinance && m.upgradeFinance !== '0') ? `<div>Upgrade for Finance: ₹${m.upgradeFinance}</div>` : '';
+
+    const upgradeLine = (m.upgrade && m.upgrade !== '0')
+      ? `<div>Upgrade: ₹${m.upgrade}</div>` : '';
+
+    const upgradeFinanceLine = (m.upgradeFinance && m.upgradeFinance !== '0')
+      ? `<div>Upgrade for Finance: ₹${m.upgradeFinance}</div>` : '';
+
     let featuresHtml = '';
     if(m.features){
       const arr = m.features.split(/[.,;\n]/).filter(x=>x.trim());
       featuresHtml = `<ul>${arr.map(x=>`<li>${x.trim()}</li>`).join('')}</ul>`;
     }
+
     card.innerHTML = `
       <h4>${m.name||''}</h4>
       <div>MOP: ₹${m.mop||0}</div>
@@ -209,46 +232,57 @@ function renderModels(models){
       </div>
       <div class="final" style="margin-top:8px">Final NLC: <span class="finalVal">—</span></div>
     `;
+
     const calcBtn = card.querySelector('.calcBtn');
     const dealerInput = card.querySelector('.dealerInput');
     const finalVal = card.querySelector('.finalVal');
+
     calcBtn.addEventListener('click', ()=>{
       const dealer = parseFloat(dealerInput.value);
       if(isNaN(dealer)){ alert('Enter dealer %'); return; }
+
       const name = (m.name||'').toLowerCase();
       const isIphone = name.includes('iphone') || name.includes('apple');
       const isSamsung = name.includes('samsung');
+
       const dp = Number(m.dp)||0;
       const preGstDp = Number(m.preGstDp)||0;
       const sellout = Number(m.sellout)||0;
       const sellin = Number(m.sellin)||0;
       const upgrade = parseFloat(m.upgrade||0);
       const upgradeFinance = parseFloat(m.upgradeFinance||0);
+
       let nlcText = '';
+
       if(isIphone){
         const nlc = (Number(m.mop)||0) - ((Number(m.mop)||0) * dealer / 100);
         nlcText = `₹${nlc.toFixed(2)}`;
-      } else if(isSamsung){
+      } 
+      else if(isSamsung){
         if(!isNaN(upgrade) && upgrade>0){
-          const nlcU = dp - (preGstDp * dealer / 100) - sellout - sellin - (upgrade - 1000);
-          nlcText += `Upgrade: ₹${nlcU.toFixed(2)} `;
+          const val = dp - (preGstDp * dealer / 100) - sellout - sellin - (upgrade - 1000);
+          nlcText += `Upgrade: ₹${val.toFixed(2)} `;
         }
         if(!isNaN(upgradeFinance) && upgradeFinance>0){
-          const nlcF = dp - (preGstDp * dealer / 100) - sellout - sellin - (upgradeFinance - 1000);
-          nlcText += `Finance: ₹${nlcF.toFixed(2)}`;
+          const val = dp - (preGstDp * dealer / 100) - sellout - sellin - (upgradeFinance - 1000);
+          nlcText += `Finance: ₹${val.toFixed(2)}`;
         }
-        if(!nlcText) nlcText = 'No valid upgrade values found.';
-      } else {
+        if(!nlcText) nlcText = 'No valid upgrade values.';
+      }
+      else {
         const nlc = dp - (preGstDp * dealer / 100) - (sellout - (sellout * 0.18)) - sellin;
         nlcText = `₹${nlc.toFixed(2)}`;
       }
+
       finalVal.textContent = nlcText;
     });
+
     modelsGrid.appendChild(card);
   });
 }
 </script>
 </body>
 </html>
+
 
 
