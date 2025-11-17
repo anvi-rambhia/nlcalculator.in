@@ -117,13 +117,6 @@ onAuthStateChanged(auth, async user => {
     userEmail.textContent = email;
     logoutBtn.style.display = 'inline-block';
 
-    // admin -> redirect to admin.html
-    if(email.toLowerCase() === ADMIN_EMAIL.toLowerCase()){
-      // admin signed in here — send to admin panel
-      window.location.href = 'admin.html';
-      return;
-    }
-
     // check Firestore users collection for uid and role:user
     try {
       const q = query(collection(db,'users'), where('uid','==', user.uid));
@@ -252,3 +245,4 @@ function renderModels(models){
 </script>
 </body>
 </html>
+
