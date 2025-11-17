@@ -287,10 +287,11 @@ try {
 const cred = await createUserWithEmailAndPassword(auth, email, pass);
 
 await addDoc(collection(db, "users"), {
-uid: cred.user.uid,
-name,
-email,
-createdAt: new Date()
+    uid: cred.user.uid,
+    name,
+    email,
+    role: "user",
+    createdAt: new Date()
 });
 
 alert("User added");
@@ -325,3 +326,4 @@ if (id === "usersPanel") loadUsers();
 
 </body>
 </html>
+
