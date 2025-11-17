@@ -1,128 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>KORE Mobiles — NLC Calculator</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <style>
-/* YOUR ORIGINAL CSS — UNCHANGED */
-:root {
-  --blue: #007bff;
-  --light-bg: #f5f7fb;
-  --white: #fff;
-  --shadow: 0 6px 18px rgba(0,0,0,0.07);
-}
-body {
-  font-family: 'Poppins', sans-serif;
-  margin: 0;
-  background: var(--light-bg);
-  color: #111;
-}
-header {
-  background: var(--white);
-  box-shadow: var(--shadow);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 20px;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-header h2 {
-  margin: 0;
-  color: var(--blue);
-  font-size: 1.2rem;
-}
-header div {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-header button {
-  background: none;
-  border: 1px solid var(--blue);
-  color: var(--blue);
-  border-radius: 8px;
-  padding: 6px 14px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-header button:hover {
-  background: var(--blue);
-  color: #fff;
-  transition: 0.3s;
-}
-
-.login-box {
-  background: var(--white);
-  padding: 30px;
-  max-width: 360px;
-  margin: 100px auto;
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  text-align: center;
-}
-input {
-  width: 95%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  font-size: 1rem;
-}
-button.primary {
-  background: var(--blue);
-  color: white;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  width: 100%;
-}
-button.primary:hover { opacity: 0.9; }
-
-.container {
-  max-width: 1100px;
-  margin: 25px auto;
-  padding: 0 15px;
-}
-.search {
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-  box-shadow: var(--shadow);
-  background: var(--white);
-}
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 18px;
-  margin-top: 25px;
-}
-.card {
-  background: var(--white);
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  padding: 16px;
-}
-.final { font-weight: 700; color: #007bff; }
-
+:root{--blue:#007bff;--light-bg:#f5f7fb;--white:#fff;--shadow:0 6px 18px rgba(0,0,0,0.07)}
+body{font-family:'Poppins',sans-serif;margin:0;background:var(--light-bg);color:#111}
+header{background:var(--white);box-shadow:var(--shadow);display:flex;justify-content:space-between;align-items:center;padding:12px 20px;position:sticky;top:0;z-index:10}
+header h2{margin:0;color:var(--blue);font-size:1.2rem}
+header div{display:flex;align-items:center;gap:10px}
+header button{background:none;border:1px solid var(--blue);color:var(--blue);border-radius:8px;padding:6px 14px;cursor:pointer;font-weight:600}
+.login-box{background:var(--white);padding:30px;max-width:360px;margin:100px auto;border-radius:12px;box-shadow:var(--shadow);text-align:center}
+.login-box input{width:95%;padding:10px;border:1px solid #ccc;border-radius:8px;margin-bottom:12px}
+button.primary{background:var(--blue);color:white;border:none;padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:600;width:100%}
+.container{max-width:1100px;margin:25px auto;padding:0 15px}
+.search{width:100%;padding:12px;border-radius:10px;border:1px solid #ccc;font-size:1rem;box-shadow:var(--shadow);background:var(--white)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:25px}
+.card{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:16px}
+.final{font-weight:700;color:var(--blue)}
+.msg{color:#d9534f;margin-top:10px;text-align:center}
+@media(max-width:600px){.login-box{margin:60px 20px;padding:25px}}
 </style>
 </head>
-
 <body>
 
 <header>
   <h2>KORE Mobiles — NLC Calculator</h2>
   <div>
     <span id="userEmail"></span>
-    <button id="logoutBtn" onclick="logout()">Logout</button>
+    <button id="logoutBtn" style="display:none">Logout</button>
   </div>
 </header>
 
@@ -130,28 +38,20 @@ button.primary:hover { opacity: 0.9; }
   <h3>Login to Continue</h3>
   <input id="loginEmail" type="email" placeholder="Email" />
   <input id="loginPass" type="password" placeholder="Password" />
-  <button class="primary" onclick="login()">Login</button>
-  <p id="loginMsg" style="color:red;font-size:0.9rem;"></p>
+  <button class="primary" id="loginBtn">Login</button>
+  <p id="loginMsg" class="msg"></p>
 </div>
 
-<div id="mainPanel" class="container" style="display:none;">
-  <input id="search" class="search" type="text" placeholder="Search models by name, RAM, or ROM">
+<div id="mainPanel" class="container" style="display:none">
+  <input id="search" class="search" type="text" placeholder="Search models by name...">
   <div id="modelsGrid" class="grid"></div>
 </div>
 
 <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-/* FIREBASE IMPORTS */
-import { initializeApp } from 
-"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-
-import { getFirestore, collection, getDocs } from 
-"https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-import { doc, getDoc } from 
-"https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-/* INIT FIREBASE */
 const firebaseConfig = {
   apiKey: "AIzaSyByEiFSbsDlrCtVJjZgvbCoYPt_io2CpTk",
   authDomain: "nlcalulator.firebaseapp.com",
@@ -159,100 +59,196 @@ const firebaseConfig = {
   storageBucket: "nlcalulator.firebasestorage.app",
   messagingSenderId: "783940164431",
   appId: "1:783940164431:web:edd9e24a8e6901942b433a",
+  measurementId: "G-D8CXJYMPG0"
 };
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getFirestore(app);
 
-/* ELEMENTS */
-const loginPanel = document.getElementById("loginPanel");
-const mainPanel = document.getElementById("mainPanel");
-const loginMsg = document.getElementById("loginMsg");
-const userEmail = document.getElementById("userEmail");
-const modelsGrid = document.getElementById("modelsGrid");
-const searchInput = document.getElementById("search");
+const ADMIN_EMAIL = "anvirambhiya@gmail.com";
+
+const loginPanel = document.getElementById('loginPanel');
+const loginEmail = document.getElementById('loginEmail');
+const loginPass = document.getElementById('loginPass');
+const loginBtn = document.getElementById('loginBtn');
+const loginMsg = document.getElementById('loginMsg');
+
+const mainPanel = document.getElementById('mainPanel');
+const modelsGrid = document.getElementById('modelsGrid');
+const searchInput = document.getElementById('search');
+const userEmail = document.getElementById('userEmail');
+const logoutBtn = document.getElementById('logoutBtn');
 
 let allModels = [];
+let inactivityTimer;
 
-/* USER LOGIN USING FIRESTORE ONLY */
-window.login = async function () {
+/* inactivity auto logout (30s) */
+function resetInactivityTimer(){
+  clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(async ()=>{
+    try{ await signOut(auth); }catch(e){}
+    alert('Session expired due to inactivity. Please log in again.');
+    location.reload();
+  }, 30000);
+}
+['click','mousemove','keypress','scroll','touchstart'].forEach(ev => window.addEventListener(ev, resetInactivityTimer));
+
+/* login */
+loginBtn.addEventListener('click', async ()=>{
+  loginMsg.textContent = '';
   const email = loginEmail.value.trim();
   const pass = loginPass.value.trim();
-  loginMsg.textContent = "";
-
-  if (!email || !pass) {
-    loginMsg.textContent = "Please enter email and password.";
-    return;
-  }
-
+  if(!email||!pass){ loginMsg.textContent = 'Enter email & password'; return; }
   try {
-    const snap = await getDocs(collection(db, "users"));
-    let found = false;
+    await signInWithEmailAndPassword(auth, email, pass);
+    // onAuthStateChanged handles rest
+  } catch(e){
+    console.error('login err', e);
+    loginMsg.textContent = e.message || 'Login failed';
+  }
+});
 
-    snap.forEach(doc => {
-      const data = doc.data();
-      if (data.email === email && data.password === pass) {
-        found = true;
-      }
-    });
+/* auth state */
+onAuthStateChanged(auth, async user => {
+  resetInactivityTimer();
+  if(user){
+    const email = user.email || '';
+    userEmail.textContent = email;
+    logoutBtn.style.display = 'inline-block';
 
-    if (!found) {
-      loginMsg.textContent = "Access denied. Please contact admin.";
+    // admin -> redirect to admin.html
+    if(email.toLowerCase() === ADMIN_EMAIL.toLowerCase()){
+      // admin signed in here — send to admin panel
+      window.location.href = 'admin.html';
       return;
     }
 
-    // SUCCESS LOGIN
-    loginPanel.style.display = "none";
-    mainPanel.style.display = "block";
-    userEmail.textContent = email;
+    // check Firestore users collection for uid and role:user
+    try {
+      const q = query(collection(db,'users'), where('uid','==', user.uid));
+      const snap = await getDocs(q);
+      let found = false;
+      snap.forEach(d => {
+        const data = d.data();
+        if(data.role === 'user') found = true;
+      });
 
-    loadModels();
+      if(found){
+        // allow access
+        loginPanel.style.display = 'none';
+        mainPanel.style.display = 'block';
+        loadModels();
+      } else {
+        // no profile/role -> access denied
+        await signOut(auth);
+        loginMsg.textContent = 'Access denied. Contact admin for access.';
+      }
 
-  } catch (err) {
-    loginMsg.textContent = "Error checking access.";
-    console.log(err);
+    } catch(e){
+      console.error('role check err', e);
+      await signOut(auth);
+      loginMsg.textContent = 'Server error. Try again.';
+    }
+
+  } else {
+    // logged out
+    userEmail.textContent = '';
+    logoutBtn.style.display = 'none';
+    mainPanel.style.display = 'none';
+    loginPanel.style.display = 'block';
   }
-};
+});
 
-/* LOGOUT */
-window.logout = function () {
-  userEmail.textContent = "";
-  mainPanel.style.display = "none";
-  loginPanel.style.display = "block";
-};
+/* logout */
+logoutBtn.addEventListener('click', async ()=>{
+  await signOut(auth);
+  location.reload();
+});
 
-/* LOAD MODELS */
-async function loadModels() {
-  const snap = await getDocs(collection(db, "mobileModels"));
-  allModels = [];
-  snap.forEach(doc => allModels.push({ id: doc.id, ...doc.data() }));
-  modelsGrid.innerHTML = "";
+/* load models (read-only) */
+async function loadModels(){
+  try {
+    const snap = await getDocs(collection(db,'mobileModels'));
+    allModels = [];
+    snap.forEach(d => allModels.push({ id: d.id, ...d.data() }));
+    renderModels([]); // empty initially
+  } catch(e){ console.error('loadModels', e); }
 }
 
-/* SEARCH FUNCTION */
-searchInput.addEventListener("input", e => {
-  const val = e.target.value.toLowerCase();
-  const filtered = allModels.filter(m => m.name.toLowerCase().includes(val));
+/* search -> render */
+searchInput.addEventListener('input', e => {
+  const val = e.target.value.toLowerCase().trim();
+  if(!val){ modelsGrid.innerHTML = ''; return; }
+  const filtered = allModels.filter(m => (m.name||'').toLowerCase().includes(val));
   renderModels(filtered);
 });
 
-/* RENDER MODELS — SAME AS YOUR ORIGINAL CODE */
-function renderModels(models) {
-  modelsGrid.innerHTML = "";
-  if (!models.length) return;
-
-  models.forEach(m => {
-    const card = document.createElement("div");
-    card.className = "card";
+function renderModels(models){
+  modelsGrid.innerHTML = '';
+  if(!models || !models.length) return;
+  models.forEach(m=>{
+    const card = document.createElement('div');
+    card.className = 'card';
+    const upgradeLine = (m.upgrade && m.upgrade !== '0') ? `<div>Upgrade: ₹${m.upgrade}</div>` : '';
+    const upgradeFinanceLine = (m.upgradeFinance && m.upgradeFinance !== '0') ? `<div>Upgrade for Finance: ₹${m.upgradeFinance}</div>` : '';
+    let featuresHtml = '';
+    if(m.features){
+      const arr = m.features.split(/[.,;\n]/).filter(x=>x.trim());
+      featuresHtml = `<ul>${arr.map(x=>`<li>${x.trim()}</li>`).join('')}</ul>`;
+    }
     card.innerHTML = `
-      <h4>${m.name}</h4>
-      <div>MOP: ₹${m.mop}</div>
-      <div>Sellout: ₹${m.sellout}</div>
+      <h4>${m.name||''}</h4>
+      <div>MOP: ₹${m.mop||0}</div>
+      <div>Sellout: ₹${m.sellout||0} | Sellin: ₹${m.sellin||0}</div>
+      <div>No Cost EMI: ₹${m.noCostEmi||0} | Full Swipe: ₹${m.fullSwipe||0}</div>
+      <div>Eligible Banks: ${(m.eligibleBanks||[]).join(', ')||'-'}</div>
+      ${upgradeLine}${upgradeFinanceLine}
+      ${featuresHtml}
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <input type="number" class="dealerInput" placeholder="Dealer %" style="flex:1;padding:8px;border-radius:6px;border:1px solid #ccc"/>
+        <button class="primary calcBtn" style="padding:8px 12px">Calculate</button>
+      </div>
+      <div class="final" style="margin-top:8px">Final NLC: <span class="finalVal">—</span></div>
     `;
+    const calcBtn = card.querySelector('.calcBtn');
+    const dealerInput = card.querySelector('.dealerInput');
+    const finalVal = card.querySelector('.finalVal');
+    calcBtn.addEventListener('click', ()=>{
+      const dealer = parseFloat(dealerInput.value);
+      if(isNaN(dealer)){ alert('Enter dealer %'); return; }
+      const name = (m.name||'').toLowerCase();
+      const isIphone = name.includes('iphone') || name.includes('apple');
+      const isSamsung = name.includes('samsung');
+      const dp = Number(m.dp)||0;
+      const preGstDp = Number(m.preGstDp)||0;
+      const sellout = Number(m.sellout)||0;
+      const sellin = Number(m.sellin)||0;
+      const upgrade = parseFloat(m.upgrade||0);
+      const upgradeFinance = parseFloat(m.upgradeFinance||0);
+      let nlcText = '';
+      if(isIphone){
+        const nlc = (Number(m.mop)||0) - ((Number(m.mop)||0) * dealer / 100);
+        nlcText = `₹${nlc.toFixed(2)}`;
+      } else if(isSamsung){
+        if(!isNaN(upgrade) && upgrade>0){
+          const nlcU = dp - (preGstDp * dealer / 100) - sellout - sellin - (upgrade - 1000);
+          nlcText += `Upgrade: ₹${nlcU.toFixed(2)} `;
+        }
+        if(!isNaN(upgradeFinance) && upgradeFinance>0){
+          const nlcF = dp - (preGstDp * dealer / 100) - sellout - sellin - (upgradeFinance - 1000);
+          nlcText += `Finance: ₹${nlcF.toFixed(2)}`;
+        }
+        if(!nlcText) nlcText = 'No valid upgrade values found.';
+      } else {
+        const nlc = dp - (preGstDp * dealer / 100) - (sellout - (sellout * 0.18)) - sellin;
+        nlcText = `₹${nlc.toFixed(2)}`;
+      }
+      finalVal.textContent = nlcText;
+    });
     modelsGrid.appendChild(card);
   });
 }
-
 </script>
 </body>
 </html>
