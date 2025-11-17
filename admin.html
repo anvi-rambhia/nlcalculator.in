@@ -6,145 +6,125 @@
 <title>Kore Mobiles — Admin Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
 <style>
-    :root { --blue:#007bff; --green:#28a745; --red:#dc3545; --bg:#f7f9fc; }
-    body { font-family:'Poppins',sans-serif; margin:0; background:var(--bg); color:#111; }
-
-    /* LOGIN BOX */
-    #loginBox {
-        max-width:360px;
-        margin:80px auto;
-        background:#fff;
-        padding:25px;
-        border-radius:14px;
-        box-shadow:0 8px 25px rgba(0,0,0,0.15);
-        text-align:center;
-    }
-    #loginBox h2 { margin-bottom:15px; color:var(--blue); }
-    #loginBox input {
-        width:100%; padding:10px; margin:8px 0;
-        border:1px solid #ccc; border-radius:8px;
-    }
-    #loginBox button {
-        width:100%; padding:10px;
-        background:var(--blue); border:none; color:#fff;
-        font-weight:600; border-radius:8px; cursor:pointer;
-    }
-
-    /* ADMIN DASHBOARD (YOUR ORIGINAL DESIGN) */
-    #adminSection { display:none; }
-
-    .wrap{max-width:1000px;margin:18px auto;padding:14px}
-    .header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-    h2{color:var(--blue);margin:0;font-size:1.4rem}
-    .btn{padding:10px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:600}
-    .primary{background:var(--blue);color:#fff}
-    .logout{background:var(--red);color:#fff}
-    .layout{display:grid;grid-template-columns:1fr 420px;gap:14px}
-    .panel{background:#fff;border-radius:12px;padding:12px;box-shadow:0 12px 30px rgba(0,0,0,0.06)}
-    .table{width:100%;border-collapse:collapse;margin-top:8px}
-    .table th,.table td{padding:8px;border-bottom:1px solid #eee;text-align:left;font-size:.95rem;vertical-align:middle}
-    .actions button{margin-right:6px;padding:6px 10px;border-radius:8px;border:none;cursor:pointer}
-    .edit{background:#ffc107;color:#111}
-    .del{background:#dc3545;color:#fff}
-    .add{background:var(--green);color:#fff}
-    .note{font-size:.9rem;color:#666;margin-top:8px}
-    @media(max-width:900px){.layout{grid-template-columns:1fr}}
-    input,select{width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;margin-top:4px}
+:root{--blue:#007bff;--green:#28a745;--red:#dc3545;--bg:#f7f9fc}
+body{font-family:'Poppins',sans-serif;margin:0;background:var(--bg);color:#111}
+.wrap{max-width:1000px;margin:18px auto;padding:14px}
+.header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+h2{color:var(--blue);margin:0;font-size:1.4rem}
+.btn{padding:10px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:600}
+.primary{background:var(--blue);color:#fff}
+.logout{background:var(--red);color:#fff}
+.layout{display:grid;grid-template-columns:1fr 420px;gap:14px}
+.panel{background:#fff;border-radius:12px;padding:12px;box-shadow:0 12px 30px rgba(0,0,0,0.06)}
+.table{width:100%;border-collapse:collapse;margin-top:8px}
+.table th,.table td{padding:8px;border-bottom:1px solid #eee;text-align:left;font-size:.95rem;vertical-align:middle}
+.actions button{margin-right:6px;padding:6px 10px;border-radius:8px;border:none;cursor:pointer}
+.edit{background:#ffc107;color:#111}
+.del{background:#dc3545;color:#fff}
+.add{background:var(--green);color:#fff}
+.note{font-size:.9rem;color:#666;margin-top:8px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+input,select{width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;margin-top:4px}
+.login-box{max-width:360px;margin:80px auto;background:#fff;padding:25px;border-radius:14px;box-shadow:0 8px 25px rgba(0,0,0,0.15);text-align:center}
+.login-box input{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:8px}
+.login-box button{width:100%;padding:10px;background:var(--blue);border:none;color:#fff;font-weight:600;border-radius:8px;cursor:pointer}
+.msg{color:#d9534f;margin-top:8px}
+.small{font-size:0.9rem;color:#666}
 </style>
 </head>
-
 <body>
 
-<!-- LOGIN SCREEN -->
-<div id="loginBox">
-    <h2>Admin Login</h2>
-    <input id="loginEmail" type="email" placeholder="Enter email">
-    <input id="loginPass" type="password" placeholder="Enter password">
-    <button id="loginBtn">Login</button>
-    <p id="loginMsg" style="color:red;font-size:0.9rem;margin-top:8px;"></p>
+<!-- LOGIN -->
+<div id="loginBox" class="login-box">
+  <h2>Admin Login</h2>
+  <input id="loginEmail" type="email" placeholder="Admin email">
+  <input id="loginPass" type="password" placeholder="Admin password">
+  <button id="loginBtn">Login</button>
+  <p id="loginMsg" class="msg"></p>
+  <p class="small">Admin email: <strong>anvirambhiya@gmail.com</strong></p>
 </div>
 
-<!-- ADMIN DASHBOARD -->
-<div id="adminSection">
-<div class="wrap">
-<div class="header">
-<h2>⚙️ Admin Dashboard</h2>
-<div style="display:flex;gap:8px">
-<button class="btn primary" onclick="showPanel('modelsPanel')">📱 Models</button>
-<button class="btn primary" onclick="showPanel('usersPanel')">👤 Users</button>
-<button class="btn logout" id="logoutBtn">Logout</button>
-</div>
+<!-- ADMIN SECTION -->
+<div id="adminSection" style="display:none">
+  <div class="wrap">
+    <div class="header">
+      <h2>⚙️ Admin Dashboard</h2>
+      <div style="display:flex;gap:8px">
+        <button class="btn primary" onclick="showPanel('modelsPanel')">📱 Models</button>
+        <button class="btn primary" onclick="showPanel('usersPanel')">👤 Users</button>
+        <button class="btn logout" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+
+    <!-- MODELS -->
+    <div id="modelsPanel" class="layout">
+      <div class="panel">
+        <h3>Models</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Model</th><th>MOP</th><th>DP</th><th>Pre-GST DP</th>
+              <th>Sellout</th><th>Sellin</th><th>No Cost EMI</th>
+              <th>Full Swipe</th><th>UPI Cashback</th>
+              <th>Eligible Banks</th><th>Features</th>
+              <th>Upgrade</th><th>Finance Upgrade</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="modelsTbody"></tbody>
+        </table>
+        <p class="note">Data is saved to Firestore collection <code>mobileModels</code>.</p>
+      </div>
+
+      <div class="panel">
+        <h3>Add / Edit Model</h3>
+        <button class="btn primary" id="newModelBtn">➕ New Model</button>
+
+        <label>Model Name</label><input id="m_name"/>
+        <label>MOP (₹)</label><input id="m_mop" type="number"/>
+        <label>DP (₹)</label><input id="m_dp" type="number"/>
+        <label>Pre-GST DP (auto)</label><input id="m_preGst" readonly/>
+        <label>Sellout (₹)</label><input id="m_sellout" type="number"/>
+        <label>Sellin (₹)</label><input id="m_sellin" type="number"/>
+        <label>No Cost EMI (₹)</label><input id="m_noCostEmi" type="number"/>
+        <label>Full Swipe (₹)</label><input id="m_fullSwipe" type="number"/>
+        <label>UPI Cashback (₹)</label><input id="m_upiCashback" type="number"/>
+        <label>Eligible Banks</label><input id="m_eligibleBanks" placeholder="HDFC, ICICI, SBI"/>
+        <label>Features</label><input id="m_features" placeholder="Enter key features or notes"/>
+        <label>Upgrade (₹)</label><input id="m_upgrade" type="number"/>
+        <label>Finance Upgrade (₹)</label><input id="m_upgradeFinance" type="number"/>
+        <button class="btn add" id="saveModelBtn">Save Model</button>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div id="usersPanel" class="layout" style="display:none">
+      <div class="panel">
+        <h3>Users</h3>
+        <table class="table">
+          <thead><tr><th>Email</th><th>Name</th><th>Actions</th></tr></thead>
+          <tbody id="usersTbody"></tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <h3>Add User</h3>
+        <label>User Name</label><input id="u_name"/>
+        <label>Email</label><input id="u_email" type="email"/>
+        <label>Password</label><input id="u_pass" type="password"/>
+        <button class="btn add" id="saveUserBtn">Create User</button>
+        <p class="small">When you create a user, the system will create a Firebase Auth account and a Firestore profile.</p>
+      </div>
+    </div>
+
+  </div>
 </div>
 
-<!-- MODELS -->
-<div id="modelsPanel" class="layout">
-<div class="panel">
-<h3>Models</h3>
-<table class="table">
-<thead>
-<tr>
-<th>Model</th><th>MOP</th><th>DP</th><th>Pre-GST DP</th>
-<th>Sellout</th><th>Sellin</th><th>No Cost EMI</th>
-<th>Full Swipe</th><th>UPI Cashback</th>
-<th>Eligible Banks</th><th>Features</th>
-<th>Upgrade</th><th>Finance Upgrade</th><th>Actions</th>
-</tr>
-</thead>
-<tbody id="modelsTbody"></tbody>
-</table>
-<p class="note">Data is saved to Firestore collection <code>mobileModels</code>.</p>
-</div>
+<!-- Firebase modular SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, query, orderBy, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-<div class="panel">
-<h3>Add / Edit Model</h3>
-<button class="btn primary" id="newModelBtn">➕ New Model</button>
-
-<label>Model Name</label><input id="m_name"/>
-<label>MOP (₹)</label><input id="m_mop" type="number"/>
-<label>DP (₹)</label><input id="m_dp" type="number" />
-<label>Pre-GST DP (auto)</label><input id="m_preGst" readonly/>
-<label>Sellout (₹)</label><input id="m_sellout" type="number"/>
-<label>Sellin (₹)</label><input id="m_sellin" type="number"/>
-<label>No Cost EMI (₹)</label><input id="m_noCostEmi" type="number"/>
-<label>Full Swipe (₹)</label><input id="m_fullSwipe" type="number"/>
-<label>UPI Cashback (₹)</label><input id="m_upiCashback" type="number"/>
-<label>Eligible Banks</label><input id="m_eligibleBanks" placeholder="HDFC, ICICI, SBI"/>
-<label>Features</label><input id="m_features" placeholder="Enter key features or notes"/>
-<label>Upgrade (₹)</label><input id="m_upgrade" type="number"/>
-<label>Finance Upgrade (₹)</label><input id="m_upgradeFinance" type="number"/>
-<button class="btn add" id="saveModelBtn">Save Model</button>
-</div>
-</div>
-
-<!-- USERS -->
-<div id="usersPanel" class="layout" style="display:none">
-<div class="panel">
-<h3>Users</h3>
-<table class="table">
-<thead><tr><th>Email</th><th>Name</th><th>Actions</th></tr></thead>
-<tbody id="usersTbody"></tbody>
-</table>
-</div>
-
-<div class="panel">
-<h3>Add / Edit User</h3>
-<label>User Name</label><input id="u_name"/>
-<label>Email</label><input id="u_email" type="email"/>
-<label>Password</label><input id="u_pass" type="password"/>
-<button class="btn add" id="saveUserBtn">Save User</button>
-</div>
-</div>
-
-</div>
-</div>
-
-<!-- Firebase compat scripts (simpler for pages) -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
-<script>
-/* ------------------ Firebase init (compat) ------------------ */
 const firebaseConfig = {
   apiKey: "AIzaSyByEiFSbsDlrCtVJjZgvbCoYPt_io2CpTk",
   authDomain: "nlcalulator.firebaseapp.com",
@@ -154,11 +134,12 @@ const firebaseConfig = {
   appId: "1:783940164431:web:edd9e24a8e6901942b433a",
   measurementId: "G-D8CXJYMPG0"
 };
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
 
-/* ------------------ Elements (explicit) ------------------ */
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+/* Elements */
 const loginBox = document.getElementById('loginBox');
 const loginEmail = document.getElementById('loginEmail');
 const loginPass = document.getElementById('loginPass');
@@ -196,44 +177,26 @@ const u_email = document.getElementById('u_email');
 const u_pass = document.getElementById('u_pass');
 const saveUserBtn = document.getElementById('saveUserBtn');
 
-/* ------------------ Admin control ------------------ */
-const ADMIN_EMAIL = "anvirambhiya@gmail.com";
+const ADMIN_EMAIL = "anvirambhiya@gmail.com"; // admin lock
 
 /* Admin login */
-loginBtn.addEventListener('click', () => {
+loginBtn.addEventListener('click', async () => {
+  loginMsg.textContent = '';
   const email = loginEmail.value.trim();
   const pass = loginPass.value.trim();
-  loginMsg.textContent = '';
   if(!email || !pass){ loginMsg.textContent = 'Enter email and password'; return; }
 
-  auth.signInWithEmailAndPassword(email, pass)
-  .then(() => {
-    if(email.toLowerCase() === ADMIN_EMAIL.toLowerCase()){
-      loginBox.style.display = 'none';
-      adminSection.style.display = 'block';
-      showPanel('modelsPanel');
-      loadModels();
-      loadUsers();
-    } else {
-      loginMsg.textContent = 'You are not admin';
-      auth.signOut();
-    }
-  })
-  .catch(err => {
-    console.error('login err', err);
-    loginMsg.textContent = err.message || 'Login failed';
-  });
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+    // auth state listener will handle UI change
+  } catch(e){
+    console.error('admin login err', e);
+    loginMsg.textContent = e.message || 'Login failed';
+  }
 });
 
-/* Logout */
-logoutBtn.addEventListener('click', async () => {
-  await auth.signOut();
-  adminSection.style.display = 'none';
-  loginBox.style.display = 'block';
-});
-
-/* Auto check */
-auth.onAuthStateChanged(user => {
+/* Auth state */
+onAuthStateChanged(auth, user => {
   if(user && user.email && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()){
     loginBox.style.display = 'none';
     adminSection.style.display = 'block';
@@ -246,57 +209,65 @@ auth.onAuthStateChanged(user => {
   }
 });
 
-/* ------------------ MODELS ------------------ */
-let editModelId = null;
+/* logout */
+logoutBtn.addEventListener('click', async () => {
+  await signOut(auth);
+  loginBox.style.display = 'block';
+  adminSection.style.display = 'none';
+});
 
+/* MODELS: load */
+let editModelId = null;
 async function loadModels(){
   modelsTbody.innerHTML = '<tr><td colspan="14">Loading...</td></tr>';
   try {
-    const snap = await db.collection('mobileModels').get();
+    const q = query(collection(db,'mobileModels'), orderBy('updatedAt','desc'));
+    const snap = await getDocs(q);
     modelsTbody.innerHTML = '';
-    snap.forEach(docSnap => {
-      const m = docSnap.data();
-      const id = docSnap.id;
+    snap.forEach(s => {
+      const m = s.data();
+      const id = s.id;
       const row = `<tr>
-          <td>${escapeHtml(m.name||'')}</td>
-          <td>₹${m.mop||0}</td>
-          <td>₹${m.dp||0}</td>
-          <td>₹${m.preGstDp||0}</td>
-          <td>₹${m.sellout||0}</td>
-          <td>₹${m.sellin||0}</td>
-          <td>₹${m.noCostEmi||0}</td>
-          <td>₹${m.fullSwipe||0}</td>
-          <td>₹${m.upiCashback||0}</td>
-          <td>${(m.eligibleBanks||[]).join(', ')}</td>
-          <td>${escapeHtml(m.features||'')}</td>
-          <td>₹${m.upgrade||0}</td>
-          <td>₹${m.upgradeFinance||0}</td>
-          <td>
-            <button class='edit' data-id='${id}'>Edit</button>
-            <button class='del' data-id='${id}'>Delete</button>
-          </td>
+        <td>${escapeHtml(m.name||'')}</td>
+        <td>₹${m.mop||0}</td>
+        <td>₹${m.dp||0}</td>
+        <td>₹${m.preGstDp||0}</td>
+        <td>₹${m.sellout||0}</td>
+        <td>₹${m.sellin||0}</td>
+        <td>₹${m.noCostEmi||0}</td>
+        <td>₹${m.fullSwipe||0}</td>
+        <td>₹${m.upiCashback||0}</td>
+        <td>${(m.eligibleBanks||[]).join(', ')}</td>
+        <td>${escapeHtml(m.features||'')}</td>
+        <td>₹${m.upgrade||0}</td>
+        <td>₹${m.upgradeFinance||0}</td>
+        <td>
+          <button class="edit" data-id="${id}">Edit</button>
+          <button class="del" data-id="${id}">Delete</button>
+        </td>
       </tr>`;
       modelsTbody.insertAdjacentHTML('beforeend', row);
     });
   } catch(e){
-    console.error('loadModels error', e);
+    console.error('loadModels', e);
     modelsTbody.innerHTML = '<tr><td colspan="14">Error loading models</td></tr>';
   }
 }
 
-/* helper for escaping HTML */
-function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+/* helper escape */
+function escapeHtml(s){ return String(s||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
 
-/* click handlers for edit/delete on models table (event delegation) */
+/* model table handler (edit/delete) */
 modelsTbody.addEventListener('click', async (ev) => {
   const btn = ev.target.closest('button');
   if(!btn) return;
-  const id = btn.getAttribute('data-id');
+  const id = btn.dataset.id;
   if(btn.classList.contains('edit')){
-    // populate form from doc
-    try{
-      const docSnap = await db.collection('mobileModels').doc(id).get();
-      const m = docSnap.data();
+    try {
+      const docRef = doc(db,'mobileModels',id);
+      const snap = await getDoc(docRef);
+      if(!snap.exists()){ alert('Model not found'); return; }
+      const m = snap.data();
       editModelId = id;
       m_name.value = m.name||'';
       m_mop.value = m.mop||'';
@@ -312,14 +283,12 @@ modelsTbody.addEventListener('click', async (ev) => {
       m_upgrade.value = m.upgrade||'';
       m_upgradeFinance.value = m.upgradeFinance||'';
       showPanel('modelsPanel');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }catch(e){ console.error(e); alert('Failed to fetch model data'); }
+      window.scrollTo({top:0,behavior:'smooth'});
+    } catch(e){ console.error(e); alert('Fetch failed'); }
   } else if(btn.classList.contains('del')){
     if(confirm('Delete this model?')){
-      try{
-        await db.collection('mobileModels').doc(id).delete();
-        loadModels();
-      }catch(e){ console.error(e); alert('Delete failed'); }
+      try { await deleteDoc(doc(db,'mobileModels',id)); loadModels(); }
+      catch(e){ console.error(e); alert('Delete failed'); }
     }
   }
 });
@@ -329,97 +298,73 @@ saveModelBtn.addEventListener('click', async () => {
   const dpVal = Number(m_dp.value) || 0;
   const payload = {
     name: m_name.value.trim(),
-    mop: Number(m_mop.value) || 0,
+    mop: Number(m_mop.value)||0,
     dp: dpVal,
     preGstDp: dpVal ? Number((dpVal/1.18).toFixed(2)) : 0,
-    sellout: Number(m_sellout.value) || 0,
-    sellin: Number(m_sellin.value) || 0,
-    noCostEmi: Number(m_noCostEmi.value) || 0,
-    fullSwipe: Number(m_fullSwipe.value) || 0,
-    upiCashback: Number(m_upiCashback.value) || 0,
-    eligibleBanks: m_eligibleBanks.value.trim() ? m_eligibleBanks.value.split(',').map(s=>s.trim()) : [],
+    sellout: Number(m_sellout.value)||0,
+    sellin: Number(m_sellin.value)||0,
+    noCostEmi: Number(m_noCostEmi.value)||0,
+    fullSwipe: Number(m_fullSwipe.value)||0,
+    upiCashback: Number(m_upiCashback.value)||0,
+    eligibleBanks: m_eligibleBanks.value.trim() ? m_eligibleBanks.value.split(',').map(x=>x.trim()) : [],
     features: m_features.value.trim(),
-    upgrade: Number(m_upgrade.value) || 0,
-    upgradeFinance: Number(m_upgradeFinance.value) || 0,
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    upgrade: Number(m_upgrade.value)||0,
+    upgradeFinance: Number(m_upgradeFinance.value)||0,
+    updatedAt: serverTimestamp()
   };
-
   try {
     if(editModelId){
-      await db.collection('mobileModels').doc(editModelId).update(payload);
+      await updateDoc(doc(db,'mobileModels',editModelId), payload);
       alert('Model updated');
     } else {
-      await db.collection('mobileModels').add(payload);
+      await addDoc(collection(db,'mobileModels'), payload);
       alert('Model added');
     }
     clearModelForm();
     loadModels();
-  } catch(e){
-    console.error('saveModel err', e);
-    alert('Save failed');
-  }
+  } catch(e){ console.error('saveModel', e); alert('Save failed'); }
 });
 
-/* new model button */
-newModelBtn.addEventListener('click', () => {
-  clearModelForm();
-  showPanel('modelsPanel');
-});
+newModelBtn.addEventListener('click', () => { clearModelForm(); showPanel('modelsPanel'); });
 
-/* clear form */
 function clearModelForm(){
   editModelId = null;
-  m_name.value = '';
-  m_mop.value = '';
-  m_dp.value = '';
-  m_preGst.value = '';
-  m_sellout.value = '';
-  m_sellin.value = '';
-  m_noCostEmi.value = '';
-  m_fullSwipe.value = '';
-  m_upiCashback.value = '';
-  m_eligibleBanks.value = '';
-  m_features.value = '';
-  m_upgrade.value = '';
-  m_upgradeFinance.value = '';
+  m_name.value=''; m_mop.value=''; m_dp.value=''; m_preGst.value=''; m_sellout.value=''; m_sellin.value='';
+  m_noCostEmi.value=''; m_fullSwipe.value=''; m_upiCashback.value=''; m_eligibleBanks.value=''; m_features.value='';
+  m_upgrade.value=''; m_upgradeFinance.value='';
 }
 
-/* ------------------ USERS ------------------ */
+/* USERS */
 async function loadUsers(){
   usersTbody.innerHTML = '<tr><td colspan="3">Loading...</td></tr>';
   try {
-    const snap = await db.collection('users').orderBy('createdAt','desc').get();
+    const q = query(collection(db,'users'), orderBy('createdAt','desc'));
+    const snap = await getDocs(q);
     usersTbody.innerHTML = '';
-    snap.forEach(docSnap => {
-      const u = docSnap.data();
-      const id = docSnap.id;
-      const row = `<tr>
+    snap.forEach(s => {
+      const u = s.data();
+      const id = s.id;
+      usersTbody.insertAdjacentHTML('beforeend', `<tr>
         <td>${escapeHtml(u.email||'')}</td>
         <td>${escapeHtml(u.name||'')}</td>
         <td><button class="del" data-id="${id}">Delete</button></td>
-      </tr>`;
-      usersTbody.insertAdjacentHTML('beforeend', row);
+      </tr>`);
     });
-  } catch(e){
-    console.error('loadUsers err', e);
-    usersTbody.innerHTML = '<tr><td colspan="3">Error</td></tr>';
-  }
+  } catch(e){ console.error('loadUsers', e); usersTbody.innerHTML = '<tr><td colspan="3">Error</td></tr>'; }
 }
 
-/* user delete via delegation */
+/* user delete delegation */
 usersTbody.addEventListener('click', async (ev) => {
   const btn = ev.target.closest('button');
   if(!btn) return;
-  const id = btn.getAttribute('data-id');
-  if(confirm('Delete user?')){
-    try{
-      await db.collection('users').doc(id).delete();
-      loadUsers();
-    }catch(e){ console.error(e); alert('Delete failed'); }
+  const id = btn.dataset.id;
+  if(confirm('Delete this user?')){
+    try { await deleteDoc(doc(db,'users',id)); loadUsers(); }
+    catch(e){ console.error(e); alert('Delete failed'); }
   }
 });
 
-/* save user (Firestore only) */
+/* save user (create Auth + Firestore profile) */
 saveUserBtn.addEventListener('click', async () => {
   const name = u_name.value.trim();
   const email = u_email.value.trim().toLowerCase();
@@ -427,34 +372,44 @@ saveUserBtn.addEventListener('click', async () => {
   if(!name || !email || !pass){ alert('Fill all fields'); return; }
 
   try {
-    await db.collection('users').add({
-      name, email, password: pass, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    // 1) create auth user
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    const uid = cred.user.uid;
+
+    // 2) create firestore user doc
+    await addDoc(collection(db,'users'), {
+      uid, email, name, role: 'user', createdAt: serverTimestamp()
     });
-    alert('User added');
-    u_name.value = ''; u_email.value = ''; u_pass.value = '';
+
+    alert('User created successfully');
+    u_name.value=''; u_email.value=''; u_pass.value='';
     loadUsers();
   } catch(e){
-    console.error('saveUser err', e);
-    alert('Add user failed');
+    console.error('create user err', e);
+    if(e.code === 'auth/email-already-in-use'){
+      alert('This email already has an Auth account. If you still want to add a profile, add it manually in Firestore.');
+    } else {
+      alert(e.message || 'Create user failed');
+    }
   }
 });
 
-/* ------------------ PANEL SWITCH ------------------ */
+/* show panel helper */
 function showPanel(id){
   modelsPanel.style.display = 'none';
   usersPanel.style.display = 'none';
   document.getElementById(id).style.display = 'grid';
-  if(id === 'modelsPanel') loadModels();
-  if(id === 'usersPanel') loadUsers();
+  if(id==='modelsPanel') loadModels();
+  if(id==='usersPanel') loadUsers();
 }
 
-/* helper: recalc preGst when dp changes (optional live) */
+/* recalc pre-gst on dp input */
 m_dp.addEventListener('input', ()=> {
-  const dpv = Number(m_dp.value) || 0;
-  m_preGst.value = dpv ? (dpv/1.18).toFixed(2) : '';
+  const v = Number(m_dp.value) || 0;
+  m_preGst.value = v ? (v/1.18).toFixed(2) : '';
 });
 
-/* initial: hide panels */
+/* initial panel */
 showPanel('modelsPanel');
 
 </script>
