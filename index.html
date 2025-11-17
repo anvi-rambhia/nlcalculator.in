@@ -177,6 +177,11 @@ searchInput.addEventListener('input', e => {
   renderModels(filtered);
 });
 
+  import { setPersistence, browserSessionPersistence } 
+from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+setPersistence(auth, browserSessionPersistence);
+
 function renderModels(models){
   modelsGrid.innerHTML = '';
   if(!models || !models.length) return;
@@ -245,4 +250,5 @@ function renderModels(models){
 </script>
 </body>
 </html>
+
 
